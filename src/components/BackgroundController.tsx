@@ -6,12 +6,12 @@ import { throttle } from '@/utils/throttle';
 // Section colors
 const sectionColors = {
   hero: '#EEEDE5',
-  artists: '#397F6D',
-  releases: '#D9581A',
+  artists: '#b5cfc8',
+  releases: '#f1c0a9',
   moodboard: '#F7E8C8',
-  shows: '#FDCBF3',
+  shows: '#fdcbf3',
   merch: '#F7E8C8',
-  default: '#EEEFE6'
+  default: '#EEEDE5'
 };
 
 export default function BackgroundController() {

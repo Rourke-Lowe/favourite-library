@@ -73,7 +73,41 @@ const Navbar = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isSticky]);
+
+  // Handle smooth scrolling when clicking navigation links
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    
+    const targetSection = document.getElementById(sectionId);
+    if (!targetSection) return;
+    
+    // Get navbar height for offset
+    const navbarHeight = navbarRef.current?.clientHeight || 0;
+    
+    // Calculate scroll position with offset for sticky navbar
+    const targetPosition = targetSection.getBoundingClientRect().top + window.scrollY - navbarHeight;
+    
+    // Smooth scroll to target
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+    
+    // Update URL without causing jump
+    window.history.pushState({}, '', `#${sectionId}`);
+  };
+  
+  // Scroll to top when logo is clicked
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Clear hash from URL
+    window.history.pushState({}, '', window.location.pathname);
+  };
 
   return (
     <>
@@ -93,13 +127,21 @@ const Navbar = () => {
       >
         <div className="container mx-auto px-6 py-3 flex items-center justify-between">
           {/* Logo that only appears when sticky */}
-          <div className={`transition-all duration-300 ${isSticky ? 'opacity-100 w-auto' : 'opacity-0 w-0'} overflow-hidden`}>
+          <div 
+            className={`transition-all duration-500 transform ${
+              isSticky 
+                ? 'opacity-100 scale-100 translate-x-0' 
+                : 'opacity-0 scale-95 -translate-x-4'
+            } cursor-pointer`}
+            onClick={scrollToTop}
+            title="Back to top"
+          >
             <Image 
               src="/logo-small.png" 
-              alt="Favorite Library"
+              alt="Favorite Library - Back to top" 
               width={40}
               height={40}
-              className="h-8 w-auto"
+              className="h-8 w-auto hover:opacity-80 transition-opacity"
             />
           </div>
 
@@ -109,6 +151,7 @@ const Navbar = () => {
               <li key={item}>
                 <a 
                   href={`#${item.toLowerCase()}`}
+                  onClick={(e) => handleNavClick(e, item.toLowerCase())}
                   className={`transition-colors font-medium hover:text-orange-500 ${
                     activeSection === item.toLowerCase() 
                       ? 'text-orange-500' 

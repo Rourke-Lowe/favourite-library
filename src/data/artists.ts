@@ -1,21 +1,38 @@
-// src/data/artists.ts
+export interface Artist {
+  id: string;
+  name: string;
+  bio: string;
+  image: string;
+  links?: {
+    instagram?: string;
+    spotify?: string;
+    bandcamp?: string;
+  };
+  releases?: string[]; // IDs referencing releases
+}
+
 export const artists = [
-    {
-      id: '1',
-      name: 'Artist 1',
-      image: '', // Leave empty for now
-      bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, urna eu tempor facilisis, lectus orci ultrices nunc, eget aliquet purus elit nec nunc.',
+  {
+    id: "elliot-dawn",
+    name: "Elliot Dawn",
+    bio: "Electronic music producer known for ambient soundscapes and introspective compositions.",
+    image: "/images/artists/elliot-dawn.jpg",
+    links: {
+      instagram: "https://instagram.com/elliot-dawn",
+      spotify: "https://spotify.com/artist/elliot-dawn",
+      bandcamp: "https://elliotdawn.bandcamp.com"
     },
-    {
-      id: '2',
-      name: 'Artist 2',
-      image: '', // Leave empty for now
-      bio: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    releases: ["midnight-echoes"]
+  },
+  {
+    id: "aurora-waves",
+    name: "Aurora Waves",
+    bio: "Production duo creating vibrant electronic music with tropical influences and upbeat rhythms.",
+    image: "/images/artists/aurora-waves.jpg",
+    links: {
+      instagram: "https://instagram.com/aurora-waves",
+      spotify: "https://spotify.com/artist/aurora-waves"
     },
-    {
-      id: '3',
-      name: 'Artist 3',
-      image: '', // Leave empty for now
-      bio: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    }
-  ];
+    releases: ["summer-waves"]
+  }
+];
