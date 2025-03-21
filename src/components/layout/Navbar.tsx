@@ -122,10 +122,10 @@ const Navbar = () => {
       <nav 
         ref={navbarRef}
         className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-          isSticky ? 'backdrop-blur-sm' : ''
+          isSticky ? 'backdrop-blur-md bg-background/80 shadow-sm' : ''
         }`}
       >
-        <div className="container mx-auto px-6 py-3 flex items-center justify-between">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo that only appears when sticky */}
           <div 
             className={`transition-all duration-500 transform ${
@@ -146,19 +146,26 @@ const Navbar = () => {
           </div>
 
           {/* Navigation links - always right-aligned */}
-          <ul className="flex space-x-10 md:space-x-16 ml-auto">
+          <ul className="flex space-x-6 md:space-x-10 ml-auto">
             {['Artists', 'Releases', 'Moodboard', 'Shows', 'Merch'].map((item) => (
               <li key={item}>
                 <a 
                   href={`#${item.toLowerCase()}`}
                   onClick={(e) => handleNavClick(e, item.toLowerCase())}
-                  className={`transition-colors font-medium hover:text-orange-500 ${
+                  className={`transition-all duration-200 font-mono text-xs uppercase tracking-wider hover:text-primary relative ${
                     activeSection === item.toLowerCase() 
-                      ? 'text-orange-500' 
-                      : 'text-gray-800'
+                      ? 'text-primary' 
+                      : 'text-foreground'
                   }`}
                 >
                   {item}
+                  
+                  {/* Animated underline for active item */}
+                  <span 
+                    className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary rounded transform origin-left transition-transform duration-300 ${
+                      activeSection === item.toLowerCase() ? 'scale-x-100' : 'scale-x-0'
+                    }`}
+                  />
                 </a>
               </li>
             ))}

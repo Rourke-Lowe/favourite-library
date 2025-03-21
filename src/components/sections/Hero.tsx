@@ -49,7 +49,7 @@ const Hero = () => {
   if (!content) {
     return (
       <section id="hero" className="h-[92vh] flex items-center justify-center">
-        <div className="w-64 h-64 md:w-[27rem] md:h-[27rem] mx-auto relative">
+      <div className="w-72 h-72 md:w-[30rem] md:h-[30rem] mx-auto relative">
           <video 
             ref={videoRef}
             className="w-full h-full object-contain outline-none border-none"
@@ -61,10 +61,7 @@ const Hero = () => {
           >
             <source src="/videos/logo-animation.mp4" type="video/mp4" />
           </video>
-          
-          <div className="absolute inset-0 -z-10 opacity-60">
-            <div className="w-full h-full bg-gradient-to-r from-yellow-100 via-pink-100 to-blue-100 rounded-full blur-xl"></div>
-          </div>
+          {/* Aura effect removed */}
         </div>
       </section>
     );
@@ -110,24 +107,21 @@ const Hero = () => {
       <div className="flex h-full">
         {/* Left column with video logo */}
         <div className="w-1/2 flex items-center justify-center relative">
-          <div className="w-64 h-64 md:w-[25rem] md:h-[25rem] relative">
-            <video 
-              ref={videoRef}
-              className="w-full h-full object-contain outline-none border-none"
-              muted
-              playsInline
-              loop
-              autoPlay
-              style={{ outline: 'none' }}
-            >
-              <source src="/videos/logo-animation.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            
-            <div className="absolute inset-0 -z-10 opacity-60">
-              <div className="w-full h-full bg-gradient-to-r from-yellow-100 via-pink-100 to-blue-100 rounded-full blur-xl"></div>
-            </div>
-          </div>
+        <div className="w-72 h-72 md:w-[30rem] md:h-[30rem] relative">
+          <video 
+            ref={videoRef}
+            className="w-full h-full object-contain outline-none border-none"
+            muted
+            playsInline
+            loop
+            autoPlay
+            style={{ outline: 'none' }}
+          >
+            <source src="/videos/logo-animation.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          {/* Aura effect removed */}
+        </div>
         </div>
         
         {/* Right column with featured content */}

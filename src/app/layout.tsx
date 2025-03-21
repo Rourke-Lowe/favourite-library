@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 import './globals.css';
-import BackgroundController from '@/components/BackgroundController';
+import ParallaxBackground from '@/components/ParallaxBackground';
 import { AudioProvider } from '@/context/AudioContext';
 
 export const metadata = {
@@ -14,12 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <BackgroundController />
-        <AudioProvider>
-          {children}
-        </AudioProvider>
+    <html lang="en" className="scroll-smooth">
+      <body className="antialiased">
+        <div className="main-content min-h-screen">
+          <ParallaxBackground />
+          <AudioProvider>
+            {children}
+          </AudioProvider>
+        </div>
       </body>
     </html>
   );

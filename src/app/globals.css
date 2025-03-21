@@ -55,7 +55,27 @@
 
     --chart-5: 27 87% 67%;
 
-    --radius: 0.5rem
+    --radius: 0.5rem;
+    
+    /* Add these new variables for our enhanced design system */
+    --surface-50: 210 40% 98%;
+    --surface-100: 210 40% 96%;
+    --surface-200: 214 32% 91%;
+    --surface-300: 213 27% 84%;
+    --surface-400: 215 20% 65%;
+    --surface-500: 215 16% 47%;
+    --surface-600: 215 19% 35%;
+    --surface-700: 215 25% 27%;
+    --surface-800: 217 33% 17%;
+    --surface-900: 222 47% 11%;
+
+    /* Adjust primary to be a distinctive orange (or your preferred brand color) */
+    --primary: 24 95% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Secondary color - complementary to primary */
+    --secondary: 210 100% 50%;
+    --secondary-foreground: 210 40% 98%
   }
   .dark {
 
@@ -105,11 +125,106 @@
 
     --chart-4: 280 65% 60%;
 
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
+      /* Dark mode variables here */
+    --surface-50: 222 47% 11%;
+    --surface-100: 217 33% 17%;
+    --surface-200: 215 25% 27%;
+    --surface-300: 215 19% 35%;
+    --surface-400: 215 16% 47%;
+    --surface-500: 215 20% 65%;
+    --surface-600: 213 27% 84%;
+    --surface-700: 214 32% 91%;
+    --surface-800: 210 40% 96%;
+    --surface-900: 210 40% 98%
   }
 }
 
+/* Parallax container styles */
+.parallax-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none; /* Allow clicking through to content */
+}
 
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 120%; /* Extra height to allow for movement */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  will-change: transform; /* Optimization for animations */
+}
+
+.background {
+  background-position: center bottom;
+}
+
+.midground {
+  background-position: center center;
+}
+
+.foreground {
+  background-position: center top;
+}
+
+/* Main content needs to be positioned relatively */
+.main-content {
+  position: relative;
+  z-index: 1;
+  background: transparent; /* No background color */
+}
+
+/* Make section backgrounds transparent */
+section {
+  background-color: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+/* Add some subtle text shadow to improve readability against the parallax background */
+h1, h2, h3, p {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+
+.dark {
+/* Dark mode variables here */
+--surface-50: 222 47% 11%;
+--surface-100: 217 33% 17%;
+--surface-200: 215 25% 27%;
+--surface-300: 215 19% 35%;
+--surface-400: 215 16% 47%;
+--surface-500: 215 20% 65%;
+--surface-600: 213 27% 84%;
+--surface-700: 214 32% 91%;
+--surface-800: 210 40% 96%;
+--surface-900: 210 40% 98%;
+}
+
+/* Import the fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Add a base style for smooth scrolling */
+html {
+scroll-behavior: smooth;
+}
+
+body {
+@apply bg-background text-foreground;
+font-feature-settings: "rlig" 1, "calt" 1;
+}
 
 @layer base {
   * {
