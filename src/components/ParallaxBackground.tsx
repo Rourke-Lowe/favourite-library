@@ -1,7 +1,8 @@
-// src/components/ParallaxBackground.tsx
+// src/components/ParallaxBackground.tsx - Updated
 'use client';
 import { useEffect, useRef } from 'react';
 import { throttle } from '@/utils/throttle';
+import { useResourcePriority } from '@/context/ResourcePriorityContext';
 
 interface ParallaxLayer {
   image: string;
@@ -34,35 +35,24 @@ const parallaxLayers: ParallaxLayer[] = [
 
 export default function ParallaxBackground() {
   const layerRefs = useRef<HTMLDivElement[]>([]);
-  const imagesLoadedRef = useRef<boolean[]>(parallaxLayers.map(() => false));
-
+  const { registerResource, isResourceLoaded } = useResourcePriority();
+  
+  // Register all parallax layers as critical resources
   useEffect(() => {
-    // Load background images with low priority
     parallaxLayers.forEach((layer, index) => {
-      const img = new Image();
-      img.onload = () => {
-        imagesLoadedRef.current[index] = true;
-        if (layerRefs.current[index]) {
-          layerRefs.current[index].style.backgroundImage = `url(${layer.image})`;
-          layerRefs.current[index].style.opacity = layer.opacity.toString();
-        }
-      };
-      // Use low priority for background images
-      img.fetchPriority = 'high';
-      img.loading = 'lazy';
-      img.src = layer.image;
+      registerResource(`parallax-layer-${index}`, layer.image, 'background', 'critical');
     });
+  }, [registerResource]);
 
+  // Set up parallax scrolling
+  useEffect(() => {
     const handleScroll = throttle(() => {
       const scrollPosition = window.scrollY;
       
       layerRefs.current.forEach((layer, index) => {
-        if (layer) {
-          // Only apply parallax effect if image is loaded
-          if (imagesLoadedRef.current[index]) {
-            const yOffset = scrollPosition * parallaxLayers[index].speed;
-            layer.style.transform = `translate3d(0, ${yOffset}px, 0)`;
-          }
+        if (layer && isResourceLoaded(`parallax-layer-${index}`)) {
+          const yOffset = scrollPosition * parallaxLayers[index].speed;
+          layer.style.transform = `translate3d(0, ${yOffset}px, 0)`;
         }
       });
     }, 10);
@@ -71,7 +61,7 @@ export default function ParallaxBackground() {
     handleScroll(); // Initial positioning
     
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isResourceLoaded]);
 
   return (
     <div className="parallax-container">
@@ -84,17 +74,19 @@ export default function ParallaxBackground() {
           className={`parallax-layer ${layer.position}`}
           style={{
             zIndex: layer.zIndex,
-            opacity: 0, // Start with opacity 0, will be set to proper value when loaded
+            opacity: isResourceLoaded(`parallax-layer-${index}`) ? layer.opacity : 0,
+            backgroundImage: isResourceLoaded(`parallax-layer-${index}`) ? `url(${layer.image})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            willChange: 'transform', // Hint for browser optimization
+            willChange: 'transform',
             position: 'fixed',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            transition: 'opacity 0.5s ease'
           }}
           aria-hidden="true"
         />
