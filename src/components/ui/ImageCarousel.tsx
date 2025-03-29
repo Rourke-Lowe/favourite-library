@@ -1,8 +1,10 @@
+// src/components/ui/ImageCarousel.tsx
 import React, { useState, useEffect, useRef } from 'react';
 
 const ImageCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set([0, 1])); // Only preload first two
   const carouselRef = useRef<HTMLDivElement>(null);
   
   // Reduced to 6 images as requested
@@ -19,12 +21,42 @@ const ImageCarousel: React.FC = () => {
   useEffect(() => {
     if (!isPaused) {
       const interval = setInterval(() => {
-        setActiveIndex((current) => (current + 1) % imagePaths.length);
+        setActiveIndex((current) => {
+          const next = (current + 1) % imagePaths.length;
+          // Preload the next image that will be shown
+          setLoadedImages(prev => new Set([...prev, next, (next + 1) % imagePaths.length]));
+          return next;
+        });
       }, 2500);
       
       return () => clearInterval(interval);
     }
   }, [isPaused, imagePaths.length]);
+  
+  // Preload active and adjacent images
+  useEffect(() => {
+    // Preload active, previous, and next images
+    const imagesToPreload = [
+      activeIndex,
+      (activeIndex + 1) % imagePaths.length,
+      (activeIndex - 1 + imagePaths.length) % imagePaths.length
+    ];
+    
+    // Preload these images
+    const preloadImages = () => {
+      imagesToPreload.forEach(idx => {
+        if (!loadedImages.has(idx)) {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => new Set([...prev, idx]));
+          };
+          img.src = imagePaths[idx];
+        }
+      });
+    };
+    
+    preloadImages();
+  }, [activeIndex, imagePaths, loadedImages]);
   
   // Calculate position and styles for each card
   const getCardStyle = (index: number) => {
@@ -73,30 +105,44 @@ const ImageCarousel: React.FC = () => {
   
   return (
     <div 
-      className="relative w-full overflow-hidden py-10" // Reduced vertical padding
+      className="relative w-full overflow-hidden py-10"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       ref={carouselRef}
     >
-      <div className="flex justify-center items-center h-[28rem] perspective-1000"> {/* Increased height */}
-        {imagePaths.map((path, index) => (
-          <div
-            key={path}
-            className="absolute w-80 h-[26rem] transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden" /* Increased width and height */
-            style={getCardStyle(index)}
-            onClick={() => setActiveIndex(index)}
-          >
-            <img 
-              src={path} 
-              alt={`Gallery image ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
+      <div className="flex justify-center items-center h-[28rem] perspective-1000">
+        {imagePaths.map((path, index) => {
+          const isLoaded = loadedImages.has(index);
+          const isVisible = index === activeIndex || 
+                            index === (activeIndex + 1) % imagePaths.length || 
+                            index === (activeIndex - 1 + imagePaths.length) % imagePaths.length;
+          
+          return (
+            <div
+              key={path}
+              className="absolute w-80 h-[26rem] transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden"
+              style={getCardStyle(index)}
+              onClick={() => setActiveIndex(index)}
+            >
+              {isLoaded || isVisible ? (
+                <img 
+                  src={path} 
+                  alt={`Gallery image ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  loading={index <= 1 ? "eager" : "lazy"}
+                  decoding={index <= 1 ? "sync" : "async"}
+                  fetchpriority={index === activeIndex ? "high" : "low"}
+                />
+              ) : (
+                <div className="w-full h-full bg-surface-200 animate-pulse"></div>
+              )}
+            </div>
+          );
+        })}
       </div>
       
       {/* Navigation dots */}
-      <div className="flex justify-center mt-6 mb-2"> {/* Reduced bottom margin */}
+      <div className="flex justify-center mt-6 mb-2">
         {imagePaths.map((_, index) => (
           <button
             key={index}

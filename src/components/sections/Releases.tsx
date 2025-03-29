@@ -1,6 +1,6 @@
 // src/components/sections/Releases.tsx
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAudio } from '@/context/AudioContext';
 import { releases } from '@/data/releases';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -9,22 +9,45 @@ import { ExternalLink, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
 import { ReleaseDataFormat } from '@/types/releases';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
-
-interface FeaturedReleaseProps {
-  release: ReleaseDataFormat;
-  // other props
-}
-
-const getArtworkPath = (release: ReleaseDataFormat) => {
-  // Check if artworkPath exists and isn't "None"
-  if (release.artworkPath && release.artworkPath !== 'None') {
-    return `/images/releases/${release.artworkPath}`;
-  }
-  // Fallback for missing artwork
-  return '/images/releases/placeholder.jpg';
+// LazyImage component for optimized image loading
+const LazyImage = ({ src, alt, className, imgClassName, onClick }) => {
+  const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  return (
+    <div 
+      ref={ref} 
+      className={cn("relative overflow-hidden", className)}
+      onClick={onClick}
+    >
+      {/* Placeholder */}
+      {(!isLoaded || !isInView) && (
+        <div className="absolute inset-0 bg-surface-200 animate-pulse"></div>
+      )}
+      
+      {/* Only render image when in viewport */}
+      {isInView && (
+        <img 
+          src={src} 
+          alt={alt} 
+          className={cn(
+            "transition-opacity duration-500",
+            isLoaded ? "opacity-100" : "opacity-0",
+            imgClassName
+          )}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
+    </div>
+  );
 };
-
 
 // Get unique artists and release types for filters
 const getUniqueArtists = () => {
@@ -37,12 +60,28 @@ const getUniqueArtists = () => {
 
 const RELEASE_TYPES = ['All Types', 'Single', 'EP', 'Album'];
 
+const getArtworkPath = (release: ReleaseDataFormat) => {
+  // Check if artworkPath exists and isn't "None"
+  if (release.artworkPath && release.artworkPath !== 'None') {
+    return `/images/releases/${release.artworkPath}`;
+  }
+  // Fallback for missing artwork
+  return '/images/releases/placeholder.jpg';
+};
+
 const Releases = () => {
   const { openModal } = useModal();
   const { currentTrack } = useAudio(); // Keep reference to useAudio to avoid breaking context
   const [artistFilter, setArtistFilter] = useState('All Artists');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [showAllReleases, setShowAllReleases] = useState(false);
+
+  // Observe the section for visibility
+  const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
 
   // List of all unique artists for the dropdown
   const uniqueArtists = useMemo(() => getUniqueArtists(), []);
@@ -54,16 +93,6 @@ const Releases = () => {
   const formatReleaseDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
-
-  // Function to get the artwork path
-  const getArtworkPath = (release: ReleaseDataFormat) => {
-    // Check if artworkPath exists and isn't "None"
-    if (release.artworkPath && release.artworkPath !== 'None') {
-      return `/images/releases/${release.artworkPath}`;
-    }
-    // Fallback for missing artwork
-    return '/images/releases/placeholder.jpg';
   };
 
   // Filter releases based on selected filters, excluding the featured one
@@ -200,14 +229,14 @@ const Releases = () => {
   };
   
   return (
-    <section id="releases" className="py-24 relative">
+    <section ref={sectionRef} id="releases" className="py-24 relative">
       <div className="container mx-auto px-6 relative z-10">
         <SectionHeader 
           title="Releases" 
           subtitle="Artifacts of creation. Some of the gorgeous work that we've helped release."
         />
 
-        {/* Featured Release Hero */}
+        {/* Featured Release Hero - Always load immediately */}
         <div className="mt-10 mb-16">
           <div className="flex flex-col md:flex-row gap-8 md:gap-12">
             {/* Left side - Album artwork */}
@@ -217,6 +246,7 @@ const Releases = () => {
                   src={getArtworkPath(featuredRelease)}
                   alt={featuredRelease.title}
                   className="w-full h-full object-cover shadow-md"
+                  loading="eager" // Use eager loading for featured content
                 />
               </div>
               
@@ -366,10 +396,10 @@ const Releases = () => {
                 <div key={release.id} className="group cursor-pointer" onClick={() => handleReleaseClick(release)}>
                   {/* Album artwork - square format with simple zoom on hover */}
                   <div className="aspect-square overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg">
-                    <img 
+                    <LazyImage 
                       src={getArtworkPath(release)}
                       alt={release.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
                   

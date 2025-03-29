@@ -1,3 +1,4 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -5,8 +6,21 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // This will ignore TypeScript errors during build
     ignoreBuildErrors: true,
+  },
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [],
+    minimumCacheTTL: 60,
+  },
+  // Optional experimental features for better performance
+  experimental: {
+    optimizeCss: true,
+  },
+  // Add a custom webpack configuration to optimize image loading
+  webpack: (config, { isServer }) => {
+    // Add image optimization plugins if needed
+    return config;
   },
 }
 

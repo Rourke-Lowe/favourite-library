@@ -1,6 +1,6 @@
 // src/components/sections/Artists.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { artists, Artist } from '@/data/artists';
 import { ArtistDataFormat } from '@/types/artist';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -15,6 +15,9 @@ import {
   Mail,
   ExternalLink 
 } from 'lucide-react';
+import { useModal } from '@/context/ModalContext';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { cn } from '@/lib/utils';
 
 // Custom social media icons not available in Lucide React
 const SpotifyIcon = ({ size = 18 }) => (
@@ -41,10 +44,53 @@ const TikTokIcon = ({ size = 18 }) => (
     <line x1="7" y1="15" x2="10" y2="15"></line>
   </svg>
 );
-import { useModal } from '@/context/ModalContext';
 
+// LazyImage component for optimized image loading
+const LazyImage = ({ src, alt, className, imgClassName, onClick }) => {
+  const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  return (
+    <div 
+      ref={ref} 
+      className={cn("relative overflow-hidden", className)}
+      onClick={onClick}
+    >
+      {/* Placeholder */}
+      {(!isLoaded || !isInView) && (
+        <div className="absolute inset-0 bg-surface-200 animate-pulse"></div>
+      )}
+      
+      {/* Only render image when in viewport */}
+      {isInView && (
+        <img 
+          src={src} 
+          alt={alt} 
+          className={cn(
+            "transition-opacity duration-500",
+            isLoaded ? "opacity-100" : "opacity-0",
+            imgClassName
+          )}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
+    </div>
+  );
+};
+
+// Main component
 const Artists = () => {
   const { openModal } = useModal();
+  const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
   
   // Function to get social icon based on link type - simplified, just for labels
   const getSocialLabel = (linkType: string) => {
@@ -153,7 +199,7 @@ const Artists = () => {
   };
   
   return (
-    <section id="artists" className="py-24">
+    <section ref={sectionRef} id="artists" className="py-24">
       <div className="container mx-auto px-6">
         <SectionHeader 
           title="Artists" 
@@ -175,10 +221,10 @@ const Artists = () => {
               >
                 {/* Artist image - matching release styling */}
                 <div className="aspect-portrait overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg relative">
-                  <img 
+                  <LazyImage 
                     src={artist.image}
                     alt={artist.name}
-                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isPastArtist ? 'grayscale' : ''}`}
+                    imgClassName={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isPastArtist ? 'grayscale' : ''}`}
                   />
                   
                   {/* Past artist label */}

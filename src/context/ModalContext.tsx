@@ -11,8 +11,8 @@ const CloseIcon = () => (
   </svg>
 );
 
-// Modal backdrop opacity setting - adjust this value to change the darkness
-const BACKDROP_OPACITY = 0.3; // 0 = completely transparent, 1 = completely opaque
+// Modal backdrop opacity setting - subtle
+const BACKDROP_OPACITY = 0.4; 
 
 type ModalContextType = {
   openModal: (title: string, content: React.ReactNode) => void;
@@ -32,15 +32,16 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     content: null,
   });
   
-  const [isMounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
+    setMounted(true);
+    return () => setMounted(false);
   }, []);
   
-  // Add event listener for escape key
   useEffect(() => {
+    if (!mounted) return;
+    
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && modalState.isOpen) {
         closeModal();
@@ -58,7 +59,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.body.style.overflow = 'auto';
       document.removeEventListener('keydown', handleEscapeKey);
     };
-  }, [modalState.isOpen]);
+  }, [modalState.isOpen, mounted]);
   
   const openModal = (title: string, content: React.ReactNode) => {
     setModalState({
@@ -85,37 +86,86 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ModalContext.Provider value={{ openModal, closeModal }}>
       {children}
       
-      {/* Modal Portal - mounted to document.body */}
-      {isMounted && modalState.isOpen && createPortal(
-        <div 
-          className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-[9999]"
-          style={{ 
-            position: 'fixed',
-            backgroundColor: `rgba(0, 0, 0, ${BACKDROP_OPACITY})` 
-          }}
-          onClick={handleBackdropClick}
-        >
+      {mounted && modalState.isOpen ? 
+        createPortal(
           <div 
-            className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl relative"
-            onClick={e => e.stopPropagation()}
+            style={{ 
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: `rgba(0, 0, 0, ${BACKDROP_OPACITY})`,
+              backdropFilter: 'blur(3px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+            }}
+            onClick={handleBackdropClick}
           >
-            <div className="sticky top-0 flex justify-between items-center p-6 border-b bg-white z-10">
-              <h2 className="text-xl font-medium">{modalState.title}</h2>
-              <button 
-                onClick={closeModal}
-                className="p-1 rounded-full hover:bg-gray-100"
-                aria-label="Close modal"
-              >
-                <CloseIcon />
-              </button>
+            <div 
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                width: '90%',
+                maxWidth: '600px',
+                maxHeight: '90vh',
+                overflow: 'auto',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                position: 'relative',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{
+                position: 'sticky',
+                top: 0,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '20px',
+                backgroundColor: 'white',
+                zIndex: 1,
+              }}>
+                <h2 style={{ 
+                  fontSize: '20px', 
+                  fontWeight: '500',
+                  margin: 0,
+                  color: '#333'
+                }}>
+                  {modalState.title}
+                </h2>
+                <button 
+                  onClick={closeModal}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.2s',
+                    color: '#666',
+                  }}
+                  onMouseOver={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                  onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                  aria-label="Close modal"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+              <div style={{ padding: '0 24px 24px 24px' }}>
+                {modalState.content}
+              </div>
             </div>
-            <div className="p-6">
-              {modalState.content}
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        ) 
+        : null
+      }
     </ModalContext.Provider>
   );
 };

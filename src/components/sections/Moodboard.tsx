@@ -1,7 +1,47 @@
 // src/components/sections/Moodboard.tsx
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SectionHeader from '@/components/ui/SectionHeader';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { cn } from '@/lib/utils';
+
+// LazyImage component for optimized image loading
+const LazyImage = ({ src, alt, className, imgClassName, parentClassName }) => {
+  const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '300px', // Load a bit earlier for moodboard
+  });
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  return (
+    <div 
+      ref={ref} 
+      className={cn("relative overflow-hidden", parentClassName)}
+    >
+      {/* Placeholder */}
+      {(!isLoaded || !isInView) && (
+        <div className="w-full h-full bg-surface-200 animate-pulse"></div>
+      )}
+      
+      {/* Only render image when in viewport */}
+      {isInView && (
+        <img 
+          src={src} 
+          alt={alt} 
+          className={cn(
+            "transition-all duration-700",
+            isLoaded ? "opacity-100 transform-none" : "opacity-0 translate-y-4",
+            className,
+            imgClassName
+          )}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
+    </div>
+  );
+};
 
 const Moodboard = () => {
   // Create array of image paths for all 10 moodboard images
@@ -10,20 +50,12 @@ const Moodboard = () => {
   // Ref for the container
   const galleryRef = useRef<HTMLDivElement>(null);
   
-  useEffect(() => {
-    // Animate images in on load for a more dynamic feel
-    const gallery = galleryRef.current;
-    if (!gallery) return;
-    
-    const images = gallery.querySelectorAll('.moodboard-item');
-    
-    images.forEach((img, index) => {
-      setTimeout(() => {
-        (img as HTMLElement).style.opacity = '1';
-        (img as HTMLElement).style.transform = 'translateY(0)';
-      }, 100 * index);
-    });
-  }, []);
+  // Section visibility observer
+  const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
   
   // Dynamic layout - some images span multiple grid cells
   const getGridClass = (index: number) => {
@@ -41,7 +73,7 @@ const Moodboard = () => {
   };
   
   return (
-    <section id="moodboard" className="py-24">
+    <section ref={sectionRef} id="moodboard" className="py-24">
       <div className="container mx-auto px-6">
         <SectionHeader 
           title="Moodboard" 
@@ -56,19 +88,14 @@ const Moodboard = () => {
           {moodboardImages.map((src, index) => (
             <div 
               key={index} 
-              className={`moodboard-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out ${getGridClass(index)}`}
+              className={`moodboard-item ${getGridClass(index)}`}
               style={{ display: 'flex', justifyContent: 'center' }}
             >
-              <img 
+              <LazyImage
                 src={src}
                 alt={`Moodboard image ${index + 1}`}
-                style={{ 
-                  maxWidth: '100%', 
-                  height: 'auto', 
-                  objectFit: 'contain',
-                  display: 'block'
-                }}
-                loading="lazy"
+                className="max-w-full h-auto object-contain block"
+                parentClassName={`moodboard-item ${getGridClass(index)}`}
               />
             </div>
           ))}

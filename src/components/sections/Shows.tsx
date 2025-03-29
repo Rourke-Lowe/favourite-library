@@ -14,7 +14,45 @@ import FeaturedShow from '@/components/shows/FeaturedShow';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
 import { Show } from '@/types/show';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
+// LazyImage component for optimized image loading
+const LazyImage = ({ src, alt, className, imgClassName, onClick }) => {
+  const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  return (
+    <div 
+      ref={ref} 
+      className={cn("relative overflow-hidden", className)}
+      onClick={onClick}
+    >
+      {/* Placeholder */}
+      {(!isLoaded || !isInView) && (
+        <div className="absolute inset-0 bg-surface-200 animate-pulse"></div>
+      )}
+      
+      {/* Only render image when in viewport */}
+      {isInView && (
+        <img 
+          src={src} 
+          alt={alt} 
+          className={cn(
+            "transition-opacity duration-500",
+            isLoaded ? "opacity-100" : "opacity-0",
+            imgClassName
+          )}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
+    </div>
+  );
+};
 
 // Type for time filtering
 type TimeFilterType = 'all' | 'upcoming' | 'past';
@@ -41,6 +79,13 @@ const Shows = () => {
   
   // Detect if we're on mobile
   const isMobile = useMediaQuery('(max-width: 768px)');
+
+  // Observe the section for visibility
+  const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '200px',
+  });
 
   // Close detail view when switching from mobile to desktop
   useEffect(() => {
@@ -126,15 +171,41 @@ const Shows = () => {
     }
   };
   
+  // Custom ShowCard optimized for lazy loading
+  const OptimizedShowCard = ({ show, isUpcoming, formatDate, onClick }) => (
+    <div className="cursor-pointer" onClick={onClick}>
+      <div className={cn(
+        "aspect-[4/5] overflow-hidden rounded-lg",
+        !isUpcoming && "grayscale-[30%] opacity-80"
+      )}>
+        <LazyImage 
+          src={show.image}
+          alt={show.title}
+          imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-900/80 via-surface-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      </div>
+      
+      {/* Event details below the poster (always visible) */}
+      <div className="mt-3 px-2">
+        <h3 className="font-medium text-base truncate">{show.title}</h3>
+        <p className="text-sm text-surface-600 truncate">{formatDate(show.date)}</p>
+        <p className="text-xs text-surface-500 truncate">{show.venue}, {show.city}</p>
+      </div>
+    </div>
+  );
+  
   return (
-    <section id="shows" className="py-24 relative">
+    <section ref={sectionRef} id="shows" className="py-24 relative">
       <div className="container mx-auto px-6 relative z-10">
         <SectionHeader 
           title="Shows" 
           subtitle="We run shows every couple of months in beautiful unique locations around Montreal."
         />
         
-        {/* Featured Show */}
+        {/* Featured Show - Always load immediately */}
         <FeaturedShow 
           show={featuredShow}
           isUpcoming={isUpcoming(featuredShow.date)}
@@ -249,18 +320,13 @@ const Shows = () => {
             {(viewMode === 'grid' || isMobile) ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredShows.map(show => (
-                  <div 
+                  <OptimizedShowCard
                     key={show.id}
+                    show={show}
+                    isUpcoming={isUpcoming(show.date)}
+                    formatDate={formatDate}
                     onClick={() => handleShowClick(show)}
-                    className="cursor-pointer"
-                  >
-                    <ShowCard
-                      show={show}
-                      isUpcoming={isUpcoming(show.date)}
-                      formatDate={formatDate}
-                      onClick={() => {}} // Empty handler as we now handle clicks at the wrapper level
-                    />
-                  </div>
+                  />
                 ))}
               </div>
             ) : (

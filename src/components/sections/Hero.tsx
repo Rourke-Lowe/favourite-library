@@ -14,41 +14,40 @@ const Hero = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Load featured content based on type and ID
-    const loadFeaturedContent = () => {
-      switch (featuredContent.type) {
-        case 'release': {
-          const release = releases.find(r => r.id === featuredContent.id);
-          setContent(release);
-          break;
-        }
-        case 'artist': {
-          const artist = artists.find(a => a.id === featuredContent.id);
-          setContent(artist);
-          break;
-        }
-        case 'show': {
-          const show = shows.find(s => s.id === featuredContent.id);
-          setContent(show);
-          break;
+    if (videoRef.current) {
+      // Set video properties for optimal loading
+      videoRef.current.preload = 'metadata'; // Start with metadata only
+      
+      // Only load full video after page content is ready
+      if (document.readyState === 'complete') {
+        videoRef.current.preload = 'auto';
+        loadAndPlayVideo();
+      } else {
+        window.addEventListener('load', loadAndPlayVideo);
+      }
+      
+      function loadAndPlayVideo() {
+        if (videoRef.current) {
+          videoRef.current.preload = 'auto';
+          
+          // Play video when it's ready (after content is loaded)
+          videoRef.current.addEventListener('loadeddata', () => {
+            videoRef.current.play().catch(e => {
+              console.error('Video autoplay failed:', e);
+            });
+          });
+          
+          // Load the video
+          videoRef.current.load();
         }
       }
-    };
-
-    loadFeaturedContent();
-    
-    // Set loaded state after a slight delay
-    setTimeout(() => setIsLoaded(true), 500);
-  }, []);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-      videoRef.current.play().catch(e => {
-        console.error('Video autoplay failed:', e);
-      });
+      
+      return () => {
+        window.removeEventListener('load', loadAndPlayVideo);
+      };
     }
   }, []);
+  
 
   // Helper functions to get content data based on type
   const getImage = () => {
@@ -89,17 +88,18 @@ const Hero = () => {
     return (
       <section id="hero" className="h-[92vh] flex items-center justify-center">
         <div className="w-72 h-72 md:w-[30rem] md:h-[30rem] mx-auto">
-          <video 
-            ref={videoRef}
-            className="w-full h-full object-contain outline-none border-none"
-            muted
-            playsInline
-            loop
-            autoPlay
-            style={{ outline: 'none' }}
-          >
-            <source src="/videos/logo-animation.mp4" type="video/mp4" />
-          </video>
+        <video 
+        ref={videoRef}
+        className="w-full h-full object-contain outline-none border-none"
+        muted
+        playsInline
+        loop
+        preload="metadata" // Start with metadata loading
+        style={{ outline: 'none' }}
+      >
+        <source src="/videos/logo-animation.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
           {/* Removed aura effect */}
         </div>
       </section>
