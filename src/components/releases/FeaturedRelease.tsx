@@ -3,17 +3,28 @@
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReleaseDataFormat } from '@/types/releases';
+import { Track, AudioTrack } from '@/types/index';
+
 
 interface FeaturedReleaseProps {
-  release: any;
-  onPlay: (track: any) => void;
+  // Change from 'any' to 'ReleaseDataFormat'
+  release: ReleaseDataFormat;  // 👈 Changed from any
+  
+  // Specify the AudioTrack type instead of any
+  onPlay: (track: AudioTrack) => void;  // 👈 Changed from any
   isPlaying: boolean;
-  currentTrack: any;
+  
+  // Specify the AudioTrack type with possibility of null
+  currentTrack: AudioTrack | null;  // 👈 Changed from any
+  
   togglePlayPause: () => void;
   onDetailsClick: () => void;
   formatReleaseDate: (date: string) => string;
-  getArtworkPath: (release: any) => string;
+  
+  // Update this parameter type as well
+  getArtworkPath: (release: ReleaseDataFormat) => string;  // 👈 Changed from any
 }
+
 
 const FeaturedRelease = ({
   release,

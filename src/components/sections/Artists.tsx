@@ -128,7 +128,7 @@ const Artists = () => {
         </div>
         
         {/* Releases - Simplified version without hover effects */}
-        {artist.releases?.length > 0 && (
+        {artist.releases && artist.releases.length > 0 && (
           <div className="mt-8">
             <h4 className="font-display text-subtitle mb-4">Releases</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

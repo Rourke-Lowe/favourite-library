@@ -8,13 +8,23 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
-import { Release } from '@/types/releases';
+import { ReleaseDataFormat } from '@/types/releases';
 
 
 interface FeaturedReleaseProps {
-  release: Release;
+  release: ReleaseDataFormat;
   // other props
 }
+
+const getArtworkPath = (release: ReleaseDataFormat) => {
+  // Check if artworkPath exists and isn't "None"
+  if (release.artworkPath && release.artworkPath !== 'None') {
+    return `/images/releases/${release.artworkPath}`;
+  }
+  // Fallback for missing artwork
+  return '/images/releases/placeholder.jpg';
+};
+
 
 // Get unique artists and release types for filters
 const getUniqueArtists = () => {
@@ -47,7 +57,7 @@ const Releases = () => {
   };
 
   // Function to get the artwork path
-  const getArtworkPath = (release) => {
+  const getArtworkPath = (release: ReleaseDataFormat) => {
     // Check if artworkPath exists and isn't "None"
     if (release.artworkPath && release.artworkPath !== 'None') {
       return `/images/releases/${release.artworkPath}`;

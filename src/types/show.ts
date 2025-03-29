@@ -1,4 +1,4 @@
-export interface show {
+export interface Show {
     id: string;
     title: string;
     date: string;
@@ -13,4 +13,7 @@ export interface show {
     series?: string;
     price?: string;
     soldOut?: boolean;
-  }
+}
+
+// Add this type alias
+export type ShowDataFormat = Show;

@@ -3,11 +3,14 @@
 import { merchItems } from '@/data/merch';
 import { useModal } from '@/context/ModalContext';
 import SectionHeader from '@/components/ui/SectionHeader';
+import { MerchItem } from '@/types/index';
+
 
 const Merch = () => {
+  
   const { openModal } = useModal();
   
-  const handleMerchClick = (item) => {
+  const handleMerchClick = (item: MerchItem) => {
     openModal(item.title, (
       <div className="space-y-6">
         <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
