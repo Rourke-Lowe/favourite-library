@@ -1,6 +1,6 @@
 // src/components/shows/ShowDetail.tsx
 import React from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar } from 'lucide-react';
 
 interface ShowDetailProps {
