@@ -48,7 +48,7 @@ export default function ParallaxBackground() {
         }
       };
       // Use low priority for background images
-      img.fetchPriority = 'low';
+      img.fetchPriority = 'high';
       img.loading = 'lazy';
       img.src = layer.image;
     });

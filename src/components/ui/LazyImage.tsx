@@ -1,77 +1,55 @@
 // src/components/ui/LazyImage.tsx
-import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { cn } from '@/lib/utils';
+import { useState, useRef } from 'react';
 
-interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface LazyImageProps {
   src: string;
   alt: string;
   className?: string;
   imgClassName?: string;
-  placeholderClassName?: string;
-  threshold?: number;
-  rootMargin?: string;
+  onClick?: () => void;
+  width?: number;
+  height?: number;
 }
 
-const LazyImage: React.FC<LazyImageProps> = ({
+const LazyImage = ({
   src,
   alt,
   className,
   imgClassName,
-  placeholderClassName,
-  threshold = 0.1,
-  rootMargin = '200px',
-  ...props
-}) => {
+  onClick,
+  width = 500,
+  height = 500,
+}: LazyImageProps) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
     triggerOnce: true,
-    threshold,
-    rootMargin,
+    threshold: 0.1,
+    rootMargin: '200px',
   });
-  
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState(false);
-  
-  useEffect(() => {
-    if (isInView && !isLoaded && !error) {
-      const img = new Image();
-      
-      img.onload = () => {
-        setIsLoaded(true);
-      };
-      
-      img.onerror = () => {
-        setError(true);
-        console.error(`Failed to load image: ${src}`);
-      };
-      
-      img.src = src;
-    }
-  }, [isInView, src, isLoaded, error]);
   
   return (
     <div 
       ref={ref} 
-      className={cn("overflow-hidden relative", className)}
-      {...props}
+      className={cn("relative overflow-hidden", className)}
+      onClick={onClick}
     >
-      {/* Show placeholder while loading */}
-      {(!isInView || !isLoaded) && (
-        <div 
-          className={cn(
-            "absolute inset-0 bg-surface-200 animate-pulse", 
-            placeholderClassName
-          )}
-        />
+      {/* Placeholder */}
+      {(!isLoaded || !isInView) && (
+        <div className="absolute inset-0 bg-surface-200 animate-pulse"></div>
       )}
       
-      {/* Only render the image when it's in view */}
+      {/* Only render image when in viewport */}
       {isInView && (
-        <img
-          src={src}
-          alt={alt}
+        <Image 
+          src={src} 
+          alt={alt} 
+          width={width}
+          height={height}
           className={cn(
-            "w-full h-full transition-opacity duration-500", 
+            "transition-opacity duration-500",
             isLoaded ? "opacity-100" : "opacity-0",
             imgClassName
           )}

@@ -1,4 +1,4 @@
-// next.config.js
+// next.config.ts
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -13,14 +13,15 @@ const nextConfig = {
     remotePatterns: [],
     minimumCacheTTL: 60,
   },
-  // Optional experimental features for better performance
   experimental: {
-    optimizeCss: true,
-  },
-  // Add a custom webpack configuration to optimize image loading
-  webpack: (config, { isServer }) => {
-    // Add image optimization plugins if needed
-    return config;
+    optimizeCss: {
+      // Add explicit critters configuration
+      critters: {
+        // Critters options here
+        preload: 'media',
+        inlineFonts: true,
+      }
+    },
   },
 }
 
