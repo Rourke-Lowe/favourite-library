@@ -2,6 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { artists, Artist } from '@/data/artists';
+import { ArtistDataFormat } from '@/types/artist';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { 
   Instagram, 

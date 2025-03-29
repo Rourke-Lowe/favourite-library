@@ -59,7 +59,7 @@ const FeaturedRelease = ({
             <div className="mb-6">
               <h4 className="text-sm font-medium text-surface-600 mb-2">Genres</h4>
               <div className="flex flex-wrap gap-2">
-                {release.genres.map((genre, index) => (
+                {release.genres.map((genre: string, index: number) => (
                   <span 
                     key={index} 
                     className="px-2 py-1 bg-surface-100 rounded-full text-xs text-surface-700"

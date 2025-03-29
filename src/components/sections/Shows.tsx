@@ -13,6 +13,8 @@ import ShowDetail from '@/components/shows/ShowDetail';
 import FeaturedShow from '@/components/shows/FeaturedShow';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
+import { Show } from '@/types/show';
+
 
 // Type for time filtering
 type TimeFilterType = 'all' | 'upcoming' | 'past';

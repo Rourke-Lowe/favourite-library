@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
+import { Release } from '@/types/releases';
+
+
+interface FeaturedReleaseProps {
+  release: Release;
+  // other props
+}
 
 // Get unique artists and release types for filters
 const getUniqueArtists = () => {
@@ -230,7 +237,7 @@ const Releases = () => {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-surface-600 mb-2">Genres</h4>
                   <div className="flex flex-wrap gap-2">
-                    {featuredRelease.genres.map((genre, index) => (
+                    {featuredRelease.genres.map((genre: string, index: number) => (
                       <span 
                         key={index} 
                         className="px-2 py-1 bg-surface-100 rounded-full text-xs text-surface-700"

@@ -1,4 +1,14 @@
+
+
 // types/index.ts
+// Export all types from their respective files
+export * from './artist';
+export * from './releases';
+export * from './show';
+
+
+
+
 export interface Artist {
     id: string;
     name: string;
