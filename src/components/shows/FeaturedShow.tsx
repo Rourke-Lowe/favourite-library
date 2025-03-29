@@ -3,6 +3,7 @@
 import { Calendar, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ShowDataFormat } from '@/types/show';
 
 interface FeaturedShowProps {
   show: any;

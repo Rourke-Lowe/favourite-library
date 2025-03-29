@@ -2,6 +2,7 @@
 'use client';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ReleaseDataFormat } from '@/types/releases';
 
 interface FeaturedReleaseProps {
   release: any;
