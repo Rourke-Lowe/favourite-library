@@ -49,10 +49,11 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[100]">
+      {/* Increased z-index to 100 to ensure it's above all other elements */}
       <div 
         ref={modalRef}
-        className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl"
       >
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-medium">{title}</h2>

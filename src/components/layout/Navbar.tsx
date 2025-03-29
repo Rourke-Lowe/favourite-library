@@ -33,7 +33,7 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = throttle(() => {
       // Determine active section for menu highlighting
-      const sections = ['hero', 'artists', 'releases', 'moodboard', 'shows', 'merch'];
+      const sections = ['hero', 'about', 'artists', 'shows', 'releases', 'moodboard'];
       let bestVisibilityScore = 0;
       let bestSection = 'hero';
       
@@ -147,7 +147,7 @@ const Navbar = () => {
 
           {/* Navigation links - always right-aligned */}
           <ul className="flex space-x-6 md:space-x-10 ml-auto">
-            {['Artists', 'Releases', 'Moodboard', 'Shows', 'Merch'].map((item) => (
+            {['About', 'Artists', 'Shows', 'Releases', 'Moodboard'].map((item) => (
               <li key={item}>
                 <a 
                   href={`#${item.toLowerCase()}`}

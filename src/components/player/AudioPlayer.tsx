@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useAudio } from '@/context/AudioContext';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 
 const AudioPlayer = () => {
@@ -26,10 +26,25 @@ const AudioPlayer = () => {
   // Update audio element when current track changes
   useEffect(() => {
     if (audioRef.current && currentTrack) {
+      // Set src and load the audio file
+      audioRef.current.src = currentTrack.audioUrl;
+      audioRef.current.load();
+      
       if (isPlaying) {
-        audioRef.current.play().catch(e => {
-          console.error('Failed to play audio:', e);
-        });
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.error('Failed to play audio:', e);
+            
+            // Try to play a placeholder sound if available
+            audioRef.current!.src = '/audio/placeholder.mp3';
+            audioRef.current!.load();
+            audioRef.current!.play().catch(e2 => {
+              console.error('Failed to play placeholder audio:', e2);
+            });
+          });
+        }
       }
     }
   }, [currentTrack, isPlaying]);
@@ -38,9 +53,13 @@ const AudioPlayer = () => {
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play().catch(e => {
-          console.error('Failed to play audio:', e);
-        });
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.error('Failed to play audio:', e);
+          });
+        }
       } else {
         audioRef.current.pause();
       }
@@ -61,8 +80,12 @@ const AudioPlayer = () => {
     
     const onLoadedMetadata = () => {
       setDuration(audio.duration);
+      
+      // Set volume to previously set value
+      audio.volume = isMuted ? 0 : volume;
     };
     
+    // Set up event listeners
     audio.addEventListener('timeupdate', updateProgress);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
     
@@ -70,10 +93,12 @@ const AudioPlayer = () => {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
     };
-  }, []);
+  }, [isMuted, volume]);
   
   // Format time in MM:SS
   const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -126,12 +151,16 @@ const AudioPlayer = () => {
           {/* Track info with cover art */}
           <div className="flex items-center flex-1 min-w-0">
             <div className="w-12 h-12 rounded overflow-hidden shadow mr-3 bg-surface-200">
-              {currentTrack.coverArt && (
+              {currentTrack.coverArt ? (
                 <img 
                   src={currentTrack.coverArt}
                   alt={currentTrack.title}
                   className="w-full h-full object-cover"
                 />
+              ) : (
+                <div className="w-full h-full bg-surface-300 flex items-center justify-center text-white">
+                  <span className="text-xs">{currentTrack.title[0]}</span>
+                </div>
               )}
             </div>
             <div className="truncate">
@@ -220,7 +249,7 @@ const AudioPlayer = () => {
       {/* Hidden audio element */}
       <audio 
         ref={audioRef}
-        src={currentTrack.audioUrl}
+        src="" // Initial empty src, will be set when a track is loaded
         className="hidden"
         preload="metadata"
         onEnded={nextTrack}

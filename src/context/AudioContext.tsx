@@ -1,6 +1,6 @@
 // src/context/AudioContext.tsx
 'use client';
-import { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useRef, ReactNode } from 'react';
 
 interface Track {
   id: string;
@@ -16,84 +16,57 @@ interface AudioContextType {
   playTrack: (track: Track) => void;
   pauseTrack: () => void;
   togglePlayPause: () => void;
+  nextTrack: () => void;
+  previousTrack: () => void;
   progress: number;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
 export const AudioProvider = ({ children }: { children: ReactNode }) => {
+  // Keep state variables but don't actually implement audio functionality
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    audioRef.current = new Audio();
-    
-    const audio = audioRef.current;
-    
-    const updateProgress = () => {
-      if (!audio) return;
-      
-      const progressValue = (audio.currentTime / audio.duration) * 100;
-      setProgress(isNaN(progressValue) ? 0 : progressValue);
-    };
-    
-    const handleTrackEnd = () => {
-      setIsPlaying(false);
-      setProgress(0);
-    };
-    
-    // Set up event listeners
-    audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('ended', handleTrackEnd);
-    
-    return () => {
-      audio.removeEventListener('timeupdate', updateProgress);
-      audio.removeEventListener('ended', handleTrackEnd);
-      audio.pause();
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !currentTrack) return;
-    
-    audio.src = currentTrack.audioUrl;
-    if (isPlaying) {
-      audio.play().catch(e => console.error("Error playing audio:", e));
-    }
-  }, [currentTrack]);
-
+  // Stub implementation that doesn't actually play audio
   const playTrack = (track: Track) => {
+    console.log('Audio playing disabled', track);
+    // Still update the state in case UI depends on it
     setCurrentTrack(track);
-    setIsPlaying(true);
+    setIsPlaying(false); // Always set to false since we don't want playback
   };
 
   const pauseTrack = () => {
-    audioRef.current?.pause();
+    console.log('Audio playing disabled - pause called');
     setIsPlaying(false);
   };
 
   const togglePlayPause = () => {
-    if (!currentTrack) return;
-    
-    if (isPlaying) {
-      audioRef.current?.pause();
-    } else {
-      audioRef.current?.play().catch(e => console.error("Error playing audio:", e));
-    }
-    
-    setIsPlaying(!isPlaying);
+    console.log('Audio playing disabled - toggle called');
+    setIsPlaying(false);
+  };
+
+  const nextTrack = () => {
+    console.log('Audio playing disabled - next track called');
+    // No implementation
+  };
+
+  const previousTrack = () => {
+    console.log('Audio playing disabled - previous track called');
+    // No implementation
   };
 
   return (
     <AudioContext.Provider value={{
       currentTrack,
-      isPlaying,
+      isPlaying: false, // Always false to prevent play states
       playTrack,
       pauseTrack,
       togglePlayPause,
+      nextTrack,
+      previousTrack,
       progress
     }}>
       {children}

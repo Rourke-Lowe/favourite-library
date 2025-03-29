@@ -3,36 +3,192 @@ export interface Artist {
   name: string;
   bio: string;
   image: string;
+  startDate: string; // When artist joined Favourite Library
+  endDate?: string;  // If no endDate, they're still active
+  status?: string;   // Artist status (Active, Inactive, etc.)
+  genre?: string;
+  location?: string;
   links?: {
     instagram?: string;
+    website?: string;
+    soundcloud?: string;
     spotify?: string;
     bandcamp?: string;
+    tiktok?: string;
+    apple?: string;
+    youtube?: string;
   };
-  releases?: string[]; // IDs referencing releases
+  releases?: any[]; // Artist releases
 }
 
 export const artists = [
   {
-    id: "elliot-dawn",
-    name: "Elliot Dawn",
-    bio: "Electronic music producer known for ambient soundscapes and introspective compositions.",
-    image: "/images/artists/elliot-dawn.jpg",
+    id: "anna-justen",
+    name: "Anna Justen",
+    bio: "Anna Justen is a Montreal-based poet and singer-songwriter known for her introspective lyrics and genre-blending sound that moves between folk, indie, and electronic elements. Her music explores themes of isolation, family relationships, and finding connection in a disconnected world.\n\nSince joining Favourite Library in spring 2023, Anna has released three singles leading up to her debut album \"Michous Dream.\" Her careful songwriting combines delicate acoustic arrangements with experimental production elements reminiscent of Saya Gray, James Blake, and Bon Iv",
+    image: "/images/artists/anna-justen.jpg",
+    startDate: "2024-08-30",
+    endDate: "2025-08-30",
+    status: "Active",
+    genre: "Folk / Indie / Post-Grunge / Electronic / Singer Songwriter",
+    location: "Montreal, QC",
     links: {
-      instagram: "https://instagram.com/elliot-dawn",
-      spotify: "https://spotify.com/artist/elliot-dawn",
-      bandcamp: "https://elliotdawn.bandcamp.com"
+      instagram: "https://www.instagram.com/annajustn/",
+      spotify: "https://open.spotify.com/artist/5I7Lr9ifQWQv9UdzU9BZr7?si=MvuPEU2DRm-e4qE91aB-VA",
+      tiktok: "https://www.tiktok.com/@annajusten",
+      apple: "https://music.apple.com/ca/artist/anna-justen/1546982293",
+      youtube: "https://www.youtube.com/@annajusten",
     },
-    releases: ["midnight-echoes"]
+    releases: [
+      {
+        id: "nightmare",
+        title: "Nightmare",
+        coverArt: "/images/releases/nightmare by Anna Justen Artwork.png",
+        releaseDate: "2025-03-28"
+      },
+      {
+        id: "piece-by-piece",
+        title: "Piece by Piece",
+        coverArt: "/images/releases/Piece by Piece Anna Justen Artwork.png",
+        releaseDate: "2025-02-14"
+      },
+      {
+        id: "orange",
+        title: "Orange",
+        coverArt: "/images/releases/Orange Anna Justen Artwork.png",
+        releaseDate: "2024-12-27"
+      },
+      {
+        id: "individualism",
+        title: "Individualism",
+        coverArt: "/images/releases/Individualism Anna Justen Artwork.png",
+        releaseDate: "2024-10-31"
+      },
+      {
+        id: "peppermint",
+        title: "Peppermint",
+        coverArt: "/images/releases/Peppermint Anna Justen Artwork.png",
+        releaseDate: "2024-09-13"
+      },
+    ],
   },
   {
-    id: "aurora-waves",
-    name: "Aurora Waves",
-    bio: "Production duo creating vibrant electronic music with tropical influences and upbeat rhythms.",
-    image: "/images/artists/aurora-waves.jpg",
+    id: "edwin-raphael",
+    name: "Edwin Raphael",
+    bio: "How do you anchor yourself when occupying multiple geographic identities at once?  \nFor Edwin Raphael, the Dubai-raised, Montreal-based songwriter, it requires an intentional and intensive form of world-building. By developing an unmistakable style of folk that merges Eastern scales with the Western pop canon, Raphael reimagines his music as an exploratory tool that allows him to construct an interior and sacred home to retreat into.",
+    image: "/images/artists/edwin-raphael.png",
+    startDate: "2019-03-08",
+    endDate: "2026-03-08",
+    status: "Active",
+    genre: "Folk / Singer Songwriter / Indie",
+    location: "Montreal, QC",
     links: {
-      instagram: "https://instagram.com/aurora-waves",
-      spotify: "https://spotify.com/artist/aurora-waves"
+      instagram: "https://instagram.com/edwinrphl",
+      website: "https://edwinraphael.com/",
+      spotify: "https://open.spotify.com/artist/44DUgsrbRUlhwfLyj4ySUB?si=2HfjmPzgTz-LrpjpIP-Zdg&dl_branch=1",
+      tiktok: "https://www.tiktok.com/@edwinrphl",
+      apple: "https://music.apple.com/us/artist/edwin-raphael/1006980355",
+      youtube: "https://www.youtube.com/channel/UC1d78xAWYzBgK2Ro1HvL6qw",
     },
-    releases: ["summer-waves"]
-  }
+    releases: [
+      {
+        id: "wytoml-deluxe",
+        title: "WYTOML Deluxe",
+        coverArt: "/images/releases/Will You Think Of Me Later Deluxe Edwin Rapahel Artwork.jpg",
+        releaseDate: "2024-05-10"
+      },
+      {
+        id: "warm-terracotta",
+        title: "Warm Terracotta",
+        coverArt: "/images/releases/Warm Terracotta Edwin Raphael Artwork.jpg",
+        releaseDate: "2023-02-17"
+      },
+      {
+        id: "will-you-think-of-me-later?",
+        title: "Will You Think Of Me Later?",
+        coverArt: "/images/releases/Will You Think Of Me Later Edwin Rapahel Artwork.jpg",
+        releaseDate: "2019-03-08"
+      },
+      {
+        id: "ocean-walk",
+        title: "Ocean Walk",
+        coverArt: "/images/releases/Ocean Walk Edwin Raphael Artwork.jpg",
+        releaseDate: "2015-06-19"
+      },
+    ],
+  },
+  {
+    id: "nicholas-cangiano",
+    name: "Nicholas Cangiano",
+    bio: "Nicholas Cangiano is a Montreal based multi instrumentalist who’s soulful and eclectic sound quickly pulls you into his colourful world and creates a window into his life as a self made musician. Where anything goes, where the peculiar is encouraged, and where you’re enticed to let down your walls and come as you are. Cangiano uses his savvy for several instruments; most notably guitar, bass, and keys to blend influences of classic funk and soul with modern pop and rock together into fresh, infectious productions that will have you coming back for more.",
+    image: "/images/artists/nicholas-cangiano.png",
+    startDate: "2022-06-01",
+    endDate: "2024-06-01",
+    status: "Past",
+    genre: "Pop / Alternative / Rock",
+    links: {
+      instagram: "https://www.instagram.com/nicholascangiano/",
+      spotify: "https://open.spotify.com/artist/7dwVih1QdpLWuZ0OeslLcg?si=FAEDRGF-Re-GspB_yR6JaQ",
+      tiktok: "https://www.tiktok.com/@nicholascangiano?lang=en",
+      apple: "https://music.apple.com/ca/artist/nicholas-cangiano/1140521208",
+      youtube: "https://www.youtube.com/channel/UCpPU-u2Z6dPoEFhraMfXyZQ",
+    },
+    releases: [
+      {
+        id: "wait-for-me",
+        title: "Wait For Me",
+        coverArt: "/images/releases/Wait For Me Nicholas Cangiano Artwork.jpg",
+        releaseDate: "2023-10-10"
+      },
+      {
+        id: "falling-behind",
+        title: "Falling Behind",
+        coverArt: "/images/releases/Falling Behind Nicholas Cangiano Artwork.png",
+        releaseDate: "2023-08-24"
+      },
+      {
+        id: "used-to-this",
+        title: "Used To This",
+        coverArt: "/images/releases/Used To This Nicholas Cangiano Artwork.jpg",
+        releaseDate: "2023-03-24"
+      },
+      {
+        id: "new-occasion-deluxe-ep",
+        title: "New Occasion Deluxe EP",
+        coverArt: "/images/releases/New Occasion Deluxe Nicholas Cangiano Artwork.png",
+        releaseDate: "2023-02-23"
+      },
+      {
+        id: "roll",
+        title: "Roll",
+        coverArt: "/images/releases/New Occasion Deluxe Nicholas Cangiano Artwork.png",
+        releaseDate: "2023-01-19"
+      },
+      {
+        id: "new-occasion-ep",
+        title: "New Occasion EP",
+        coverArt: "/images/releases/New Occasion Nicholas Cangiano Artwork.jpg",
+        releaseDate: "2022-10-13"
+      },
+      {
+        id: "kaleidoscope",
+        title: "Kaleidoscope",
+        coverArt: "/images/releases/Kaleidoscope Nicholas Cangiano Artwork.jpg",
+        releaseDate: "2022-09-01"
+      },
+      {
+        id: "right-time-right-place",
+        title: "Right Time Right Place",
+        coverArt: "/images/releases/Right Time Right Place Nicholas Cangiano Artwork.jpg",
+        releaseDate: "2022-07-14"
+      },
+      {
+        id: "the-moves",
+        title: "The Moves",
+        coverArt: "/images/releases/The Moves Nicholas Cangiano Artwork.jpg",
+        releaseDate: "2022-06-02"
+      },
+    ],
+  },
+
 ];

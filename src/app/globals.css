@@ -196,6 +196,35 @@ h1, h2, h3, p {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
+/* Add these custom utility classes to your globals.css file */
+
+/* 3D perspective utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Add this if the above class doesn't work properly */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+}
+
+/* Optional: Add a smooth animation when cards enter the viewport */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
 
 .dark {
 /* Dark mode variables here */

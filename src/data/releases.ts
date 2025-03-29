@@ -1,53 +1,289 @@
 export interface Release {
   id: string;
   title: string;
-  artist: string;
-  date: string;
+  artists: string[];
+  releaseDate: string;
+  releaseType: string;
+  genres: string[];
+  tracks: string[];
+  artworkPath: string; // Properly formatted filepath
+  spotifyUrl: string;
+  appleMusicUrl: string;
   description: string;
-  image: string;
-  coverArt: string;
-  previewAudio: string;
-  tracks: Track[];
-  type: string; // Added type property to the interface
+  audioClipTime: string | number;
+  releaseStage: string;
 }
 
-export interface Track {
-  id: string;
-  title: string;
-  duration: string;
-  audioUrl: string;
-}
 
-export const releases = [
+export const releases: Release[] = [
   {
-    id: "midnight-echoes",
-    title: "Midnight Echoes",
-    artist: "Elliot Dawn",
-    date: "February 18, 2025",
-    description: "A hauntingly beautiful collection exploring themes of solitude and renewal.",
-    image: "/images/releases/midnight-echoes.jpg",
-    coverArt: "/images/releases/midnight-echoes.jpg",
-    previewAudio: "/audio/preview-midnight-echoes.mp3",
-    type: "EP", // Added type property
-    tracks: [
-      { id: "track1", title: "Midnight Prelude", duration: "3:42", audioUrl: "/audio/track1.mp3" },
-      { id: "track2", title: "Echoes of Dawn", duration: "4:17", audioUrl: "/audio/track2.mp3" },
-      { id: "track3", title: "Solitude", duration: "5:30", audioUrl: "/audio/track3.mp3" }
-    ]
+    id: 'nightmare',
+    title: 'Nightmare',
+    artists: ['Anna Justen'],
+    releaseDate: '2025-03-28',
+    releaseType: 'Single',
+    genres: ['Glitch', 'Alt-Pop', 'Bedroom Pop'],
+    tracks: ['Nightmare'],
+    artworkPath: 'nightmare by Anna Justen Artwork.png',
+    spotifyUrl: 'https://open.spotify.com/track/68j2zb5LZl9s47SdTMNiPx?si=55ee7d562faa4b49',
+    appleMusicUrl: 'https://music.apple.com/ca/album/nightmare/1800238165?i=1800238167',
+    description: 'Inevitably you’ll wake up from a nightmare with force, the heart pounds, the mind fights against what has come to you as a truth in a moment that is completely yours. \n \n Anna Justen, in the fifth single of her debut album, reaches her breaking point, and shares that feeling, the feeling of being pounced on by stuttering drum breaks, noisy backgrounds, and a siren-like acoustic guitar rhythm.',
+    audioClipTime: '',
+    releaseStage: 'released',
   },
   {
-    id: "summer-waves",
-    title: "Summer Waves",
-    artist: "Aurora Waves",
-    date: "January 5, 2025",
-    description: "Upbeat electronic tracks with tropical influences perfect for summer vibes.",
-    image: "/images/releases/summer-waves.jpg",
-    coverArt: "/images/releases/summer-waves.jpg",
-    previewAudio: "/audio/preview-summer-waves.mp3",
-    type: "Single", // Added type property
-    tracks: [
-      { id: "track1", title: "Ocean Drive", duration: "3:15", audioUrl: "/audio/sw-track1.mp3" },
-      { id: "track2", title: "Sunset Blvd", duration: "4:30", audioUrl: "/audio/sw-track2.mp3" }
-    ]
-  }
+    id: 'piece-by-piece',
+    title: 'Piece by Piece',
+    artists: ['Anna Justen'],
+    releaseDate: '2025-02-14',
+    releaseType: 'Single',
+    genres: ['Folk', 'Singer Songwriter'],
+    tracks: ['Individualism', 'Orange', 'Peppermint', 'Piece By Piece'],
+    artworkPath: 'Piece by Piece Anna Justen Artwork.png', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/6C4dKAflNjK4WMz8ItgsoV?si=b1fd1bd2e8f647aa',
+    appleMusicUrl: 'https://music.apple.com/ca/album/piece-by-piece-ep/1790150579',
+    description: "A heartfelt folk anthem about carrying burdens for friends in need.",
+    audioClipTime: 66,
+    releaseStage: 'released',
+  },
+  {
+    id: 'orange',
+    title: 'Orange',
+    artists: ['Anna Justen'],
+    releaseDate: '2024-12-27',
+    releaseType: 'Single',
+    genres: ['Folk', 'Electronic', 'Alternative'],
+    tracks: ['Orange', 'Peppermint', 'Individualism'],
+    artworkPath: 'Orange Anna Justen Artwork.png', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/7oYFfCLI8QVLopRFnmSJxR?si=1d9d448fd89d4963',
+    appleMusicUrl: 'https://music.apple.com/ca/album/orange-single/1781769440',
+    description: "A poetic tribute to motherhood, shifting from shy to gritty to elated.",
+    audioClipTime: 64,
+    releaseStage: 'released',
+  },
+  {
+    id: 'individualism',
+    title: 'Individualism',
+    artists: ['Anna Justen'],
+    releaseDate: '2024-10-31',
+    releaseType: 'Single',
+    genres: ['Alternative', 'Electronic', 'Post-Grunge'],
+    tracks: ['Individualism', 'Peppermint'],
+    artworkPath: 'Individualism Anna Justen Artwork.png', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/4aFzbmZ2kGugTPfFUZ8aCg?si=f0e2aececaee41ef',
+    appleMusicUrl: 'https://music.apple.com/ca/album/individualism-single/1771108587',
+    description: "A post-grunge ode to feeling trapped in our digitally 'connected' yet isolated world.",
+    audioClipTime: 96,
+    releaseStage: 'released',
+  },
+  {
+    id: 'peppermint',
+    title: 'Peppermint',
+    artists: ['Anna Justen'],
+    releaseDate: '2024-09-13',
+    releaseType: 'Single',
+    genres: ['Pop', 'Alt-Pop', 'Alternative', 'Singer Songwriter'],
+    tracks: ['Peppermint'],
+    artworkPath: 'Peppermint Anna Justen Artwork.png', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/2qQaD63v4QM5O5ORUdY7sr?si=25dbbee697804852',
+    appleMusicUrl: 'https://music.apple.com/ca/album/peppermint-single/1800237973',
+    description: "Sweet words hiding darker truths – peppermints concealing the smell of alcohol.",
+    audioClipTime: '0:16',
+    releaseStage: 'released',
+  },
+  {
+    id: 'wytoml-deluxe',
+    title: 'WYTOML Deluxe',
+    artists: ['Edwin Raphael'],
+    releaseDate: '2024-05-10',
+    releaseType: 'Album',
+    genres: ['Folk', 'Indie', 'Singer Songwriter'],
+    tracks: ['Sober', 'She Might Like Summer', 'Elephant Crossing~', 'Isle Of Strawberries', 'Bergamot Feels', 'Bloom', 'A Particular Mood', 'Everything Is Aesthetic', 'Thrills Sought After', 'Green Eyes', 'Tangerine Skies', 'Will You Think Of Me Later?', 'Denim Darlin\'', 'recurring dream~', 'Isle of Strawberries Rediscovered', 'Elephant Crossing~ (A Late Afternoon Special)', 'Isle of Strawberries Reimagined', 'See Through', 'Lie To Me', 'Contemplating Caving', 'Will You Think of Me Later? ~ Elephant Crossing'],
+    artworkPath: 'Will You Think Of Me Later Deluxe Edwin Rapahel Artwork.jpg',
+    spotifyUrl: 'https://open.spotify.com/album/7z5CMGABTgaaNMolqcvnEJ?si=wUW2-oCQRKWm5mBXJ1ZIIQ',
+    appleMusicUrl: 'https://music.apple.com/ca/album/will-you-think-of-me-later-recurring-dream/1741341059',
+    description: 'The deluxe expanded version of Edwin Raphaels debut album. A reflective exploration of memory and connection.',
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'wait-for-me',
+    title: 'Wait For Me',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2023-10-10',
+    releaseType: 'Single',
+    genres: ['Pop', 'Bedroom Pop', 'Indie'],
+    tracks: ['Wait For Me'],
+    artworkPath: 'Wait For Me Nicholas Cangiano Artwork.jpg', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/5fOh6JZEvLU8lUYbrV09CA?si=76d1d7122d294ae2',
+    appleMusicUrl: 'https://music.apple.com/ca/album/wait-for-me-single/1708323382',
+    description: "A gentle ballad with wavy vocals and caressing saxophone.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'falling-behind',
+    title: 'Falling Behind',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2023-08-24',
+    releaseType: 'Single',
+    genres: ['Indie', 'Electronic', 'Bedroom Pop'],
+    tracks: ['Falling Behind'],
+    artworkPath: 'Falling Behind Nicholas Cangiano Artwork.png', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/2bgIuOQEKQZ6TDDiMMJbfX?si=121069267e7d4747',
+    appleMusicUrl: 'https://music.apple.com/ca/album/falling-behind-single/1699334578',
+    description: "A smooth groover that calmly laughs at the irony of rushing to nowhere.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'used-to-this',
+    title: 'Used To This',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2023-03-24',
+    releaseType: 'Single',
+    genres: ['Alternative', 'Alt-Rock', 'Indie'],
+    tracks: ['Used To This'],
+    artworkPath: 'Used To This Nicholas Cangiano Artwork.jpg', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/5sEHF9qwo6e17fDzxpg6Vc?si=d288e20820524226',
+    appleMusicUrl: 'https://music.apple.com/ca/album/used-to-this-single/1685785717',
+    description: "Distorted drums and indifferent vocals explore the duality of boredom and chaos.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'new-occasion-deluxe-ep',
+    title: 'New Occasion Deluxe EP',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2023-02-23',
+    releaseType: 'EP',
+    genres: ['Indie', 'Pop', 'Bedroom Pop'],
+    tracks: ['Dazed', 'Falling Behind', 'Kaleidoscope', 'Little By Little', 'Over', 'Right Time Right Place', 'The Moves', 'Roll'],
+    artworkPath: 'New Occasion Deluxe Nicholas Cangiano Artwork.png', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/album/5tfaFofVmWghBWyCfMMjDx?si=Tg00i1BkTnyTmQf5wOf7GA',
+    appleMusicUrl: 'https://music.apple.com/ca/album/new-occasion-deluxe/1667813887',
+    description: "Groovy, danceable tracks featuring laid-back vocals over lush basslines and jangly percussion.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  }, {
+    id: 'warm-terracotta',
+    title: 'Warm Terracotta',
+    artists: ['Edwin Raphael'],
+    releaseDate: '2023-02-17',
+    releaseType: 'Album',
+    genres: ['Folk', 'Indie', 'Singer Songwriter'],
+    tracks: ['Desire Paths~', '& She Drinks Tea Just for the Company', 'Have You Been Told?', 'Under Weather', 'Contours of Spring', 'Sights Like These', 'Hate It When You See Me Like This!', 'Tripping Through My Blood', 'Deceive Me So Easy', 'Tea Break~', 'Bazaar Days', 'Purple Inside', 'Homesick for the Place I Don\'t Even Know', 'Sirimiri'],
+    artworkPath: 'Warm Terracotta Edwin Raphael Artwork.jpg',
+    spotifyUrl: 'https://open.spotify.com/album/06e1jBee1AK8hFoAjiuWTf?si=roZyxHxYQ_6KaynDhR_quw',
+    appleMusicUrl: 'https://music.apple.com/ca/album/warm-terracotta/1658888424',
+    description: 'WARM TERRACOTTA represents a sacred space to find yourselves over & over again. Fourteen songs that bring forward the duality and complexity of simply being. It trusts that when you do things from your soul, you feel a river move within you.',
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'roll',
+    title: 'Roll',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2023-01-19',
+    releaseType: 'Single',
+    genres: ['Pop', 'Indie', 'Bedroom Pop'],
+    tracks: ['Roll', 'Dazed', 'Little By Little', 'Right Time Right Place', 'The Moves', 'Kaleidoscope', 'Over'],
+    artworkPath: 'Roll Nicholas Cangiano Artwork.jpg', // Corrected format
+    spotifyUrl: 'https://open.spotify.com/album/7HcR4ljgDK5iL7IYuGXcLu?si=6DNaphbzTWyA2kaPvY3TkQ',
+    appleMusicUrl: 'https://music.apple.com/ca/album/roll-single/1661396663',
+    description: "A hypnotic, laidback sister track to 'Dazed' with Fresh Finds playlist success.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'new-occasion-ep',
+    title: 'New Occasion EP',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2022-10-13',
+    releaseType: 'EP',
+    genres: ['Pop', 'Indie', 'Bedroom Pop'],
+    tracks: ['Kaleidoscope', 'The Moves', 'Right Time Right Place', 'Little By Little', 'Over', 'Dazed'],
+    artworkPath: 'New Occasion Nicholas Cangiano Artwork.jpg', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/album/7mPuG1ZP41IW1A7X4pNzPf?si=hTnX5PciSvqwhDkqiSU0aQ',
+    appleMusicUrl: 'https://music.apple.com/ca/album/new-occasion-ep/1647632237',
+    description: "Soulful, eclectic sounds blending funk and soul with modern pop in fresh, infectious ways.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'kaleidoscope',
+    title: 'Kaleidoscope',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2022-09-01',
+    releaseType: 'Single',
+    genres: ['Neo-Soul', 'Pop', 'Indie'],
+    tracks: ['Kaleidoscope', 'Right Time Right Place', 'The Moves'],
+    artworkPath: 'Kaleidoscope Nicholas Cangiano Artwork.jpg', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/3keJc5XixGL3NmjYHQpjjE?si=e26bb75f3b2c4f36',
+    appleMusicUrl: 'https://music.apple.com/ca/album/kaleidoscope-single/1639579745',
+    description: "Neo-soul bedroom dreaminess with blooming guitar melodies and lush harmonies.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'right-time-right-place',
+    title: 'Right Time Right Place',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2022-07-14',
+    releaseType: 'Single',
+    genres: ['Rock', 'Pop', 'Indie'],
+    tracks: ['Right Time Right Place'],
+    artworkPath: 'Right Time Right Place Nicholas Cangiano Artwork.jpg', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/4uob8pGBFLrEfwmDRN0ejP?si=b0866793a55c4a84',
+    appleMusicUrl: 'https://music.apple.com/ca/album/right-time-right-place-single/1629857389',
+    description: "A celebration of finding your rhythm, owning change, and infectious empowerment.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'the-moves',
+    title: 'The Moves',
+    artists: ['Nicholas Cangiano'],
+    releaseDate: '2022-06-02',
+    releaseType: 'Single',
+    genres: ['Indie', 'Pop', 'Bedroom Pop'],
+    tracks: ['The Moves'],
+    artworkPath: 'The Moves Nicholas Cangiano Artwork.jpg', // Already formatted correctly
+    spotifyUrl: 'https://open.spotify.com/track/6gNoM43i8WJlpQFsVq2FEi?si=dc08a89e70a64fc2',
+    appleMusicUrl: 'https://music.apple.com/ca/album/the-moves-single/1622219133',
+    description: "Hypnotic grooves depicting the numbness of unrequited feelings with a shake-it-out chorus.",
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+  {
+    id: 'will-you-think-of-me-later?',
+    title: 'Will You Think Of Me Later?',
+    artists: ['Edwin Raphael'],
+    releaseDate: '2019-03-08',
+    releaseType: 'Album',
+    genres: ['Folk', 'Indie', 'Singer Songwriter'],
+    tracks: ['Sober', 'She Might Like Summer', 'Elephant Crossing~', 'Isle Of Strawberries', 'Bergamot Feels', 'Bloom', 'A Particular Mood', 'Everything Is Aesthetic', 'Thrills Sought After', 'Green Eyes', 'Tangerine Skies', 'Will You Think Of Me Later?', 'Denim Darlin\''],
+    artworkPath: 'Will You Think Of Me Later Edwin Rapahel Artwork.jpg',
+    spotifyUrl: 'https://open.spotify.com/album/2a3SSXkv6PfXWhg0qw9qGk?si=-o7JRN3LTSWhsBZOASJyUA',
+    appleMusicUrl: 'https://music.apple.com/ca/album/will-you-think-of-me-later/1712188925',
+    description: 'A reflective exploration of memory and connection.',
+    audioClipTime: 'None',
+    releaseStage: 'released',
+  },
+  {
+    id: 'ocean-walk',
+    title: 'Ocean Walk',
+    artists: ['Edwin Raphael'],
+    releaseDate: '2015-06-19',
+    releaseType: 'EP',
+    genres: ['Indie', 'Folk', 'Singer Songwriter'],
+    tracks: ['Across the Atlantic', 'Harbours', 'Sleep', 'Someday', 'Atwater', 'Queen of Coasts', 'Thinking About You'],
+    artworkPath: 'Ocean Walk Edwin Raphael Artwork.jpg',
+    spotifyUrl: 'https://open.spotify.com/album/35Eb5SiBa2J4BSwFqrIX61?si=Iy2E4KKdSwaZsKygYqbiZw',
+    appleMusicUrl: 'https://music.apple.com/ca/album/ocean-walk/1263716732',
+    description: 'Ocean Walk was my first foray into songwriting, it was written in my dorm room in a very transitional period of my life. The EP is a very special piece to me and it was all recorded very raw and live as there was no mixing or mastering added to it.',
+    audioClipTime: '',
+    releaseStage: 'released',
+  },
+ 
 ];

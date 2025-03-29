@@ -1,22 +1,75 @@
 // src/components/sections/Moodboard.tsx
 'use client';
-
-// This would normally come from your data/images
-const placeholderImages = Array(8).fill(null);
+import { useEffect, useRef } from 'react';
+import SectionHeader from '@/components/ui/SectionHeader';
 
 const Moodboard = () => {
+  // Create array of image paths for all 10 moodboard images
+  const moodboardImages = Array.from({ length: 10 }, (_, i) => `/images/moodboard/moodboard${i + 1}.jpg`);
+  
+  // Ref for the container
+  const galleryRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Animate images in on load for a more dynamic feel
+    const gallery = galleryRef.current;
+    if (!gallery) return;
+    
+    const images = gallery.querySelectorAll('.moodboard-item');
+    
+    images.forEach((img, index) => {
+      setTimeout(() => {
+        (img as HTMLElement).style.opacity = '1';
+        (img as HTMLElement).style.transform = 'translateY(0)';
+      }, 100 * index);
+    });
+  }, []);
+  
+  // Dynamic layout - some images span multiple grid cells
+  const getGridClass = (index: number) => {
+    // Make certain images stand out by spanning multiple columns or rows
+    switch (index) {
+      case 0: // First image - feature it
+        return 'md:col-span-2 md:row-span-2';
+      case 3: // Fourth image
+        return 'md:col-span-2';
+      case 7: // Eighth image
+        return 'md:row-span-2';
+      default:
+        return '';
+    }
+  };
+  
   return (
-    <section id="moodboard" className="py-20">
+    <section id="moodboard" className="py-24">
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-light mb-12">Moodboard</h2>
+        <SectionHeader 
+          title="Moodboard" 
+          subtitle="Some visual vibes that reflect our identity."
+        />
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {placeholderImages.map((_, index) => (
+        {/* Dynamic grid layout with no card backgrounds */}
+        <div 
+          ref={galleryRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {moodboardImages.map((src, index) => (
             <div 
               key={index} 
-              className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden"
+              className={`moodboard-item opacity-0 transform translate-y-8 transition-all duration-700 ease-out ${getGridClass(index)}`}
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
-              <span className="text-gray-400">Image {index + 1}</span>
+              <img 
+                src={src}
+                alt={`Moodboard image ${index + 1}`}
+                style={{ 
+                  maxWidth: '100%', 
+                  height: 'auto', 
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                loading="lazy"
+              />
             </div>
           ))}
         </div>

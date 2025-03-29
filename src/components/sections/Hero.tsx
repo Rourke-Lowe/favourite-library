@@ -1,15 +1,17 @@
 // src/components/sections/Hero.tsx
 'use client';
 import { useRef, useEffect, useState } from 'react';
-import Link from 'next/link';
+import { ArrowDown } from 'lucide-react';
 import { featuredContent } from '@/data/featured';
 import { releases } from '@/data/releases';
 import { artists } from '@/data/artists';
 import { shows } from '@/data/shows';
+import { Button } from '../ui/button';
 
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [content, setContent] = useState<any>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     // Load featured content based on type and ID
@@ -34,6 +36,9 @@ const Hero = () => {
     };
 
     loadFeaturedContent();
+    
+    // Set loaded state after a slight delay
+    setTimeout(() => setIsLoaded(true), 500);
   }, []);
 
   useEffect(() => {
@@ -44,28 +49,6 @@ const Hero = () => {
       });
     }
   }, []);
-
-  // Render loading state if content isn't loaded yet
-  if (!content) {
-    return (
-      <section id="hero" className="h-[92vh] flex items-center justify-center">
-      <div className="w-72 h-72 md:w-[30rem] md:h-[30rem] mx-auto relative">
-          <video 
-            ref={videoRef}
-            className="w-full h-full object-contain outline-none border-none"
-            muted
-            playsInline
-            loop
-            autoPlay
-            style={{ outline: 'none' }}
-          >
-            <source src="/videos/logo-animation.mp4" type="video/mp4" />
-          </video>
-          {/* Aura effect removed */}
-        </div>
-      </section>
-    );
-  }
 
   // Helper functions to get content data based on type
   const getImage = () => {
@@ -101,13 +84,11 @@ const Hero = () => {
     return content.description || content.bio;
   };
 
-  return (
-    <section id="hero" className="h-[92vh] w-full">
-      {/* Two-column layout */}
-      <div className="flex h-full">
-        {/* Left column with video logo */}
-        <div className="w-1/2 flex items-center justify-center relative">
-        <div className="w-72 h-72 md:w-[30rem] md:h-[30rem] relative">
+  // Render loading state if content isn't loaded yet
+  if (!content) {
+    return (
+      <section id="hero" className="h-[92vh] flex items-center justify-center">
+        <div className="w-72 h-72 md:w-[30rem] md:h-[30rem] mx-auto">
           <video 
             ref={videoRef}
             className="w-full h-full object-contain outline-none border-none"
@@ -118,46 +99,98 @@ const Hero = () => {
             style={{ outline: 'none' }}
           >
             <source src="/videos/logo-animation.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
-          {/* Aura effect removed */}
+          {/* Removed aura effect */}
         </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="hero" className="min-h-[92vh] w-full relative overflow-hidden">
+      {/* Remove background elements to allow parallax to show through */}
+      
+      {/* Main content */}
+      <div className="relative z-10 min-h-[92vh] flex flex-col md:flex-row items-center">
+        {/* Left column with video logo */}
+        <div className="w-full md:w-1/2 flex items-center justify-center py-8 md:py-0 transition-all duration-700 opacity-0 animate-in fade-in slide-in-from-bottom-4">
+          <div className="w-72 h-72 md:w-[30rem] md:h-[30rem]">
+            <video 
+              ref={videoRef}
+              className="w-full h-full object-contain outline-none border-none"
+              muted
+              playsInline
+              loop
+              autoPlay
+              style={{ outline: 'none' }}
+            >
+              <source src="/videos/logo-animation.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            {/* Removed aura effect */}
+          </div>
         </div>
         
         {/* Right column with featured content */}
-        <div className="w-1/2 flex flex-col justify-center p-12">
+        <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:p-12 transition-all duration-700 opacity-0 animate-in fade-in slide-in-from-bottom-8 delay-300">
           {/* Featured content tagline */}
           <div className="mb-4">
-            <span className="inline-block px-3 py-1 bg-orange-500/10 text-orange-600 rounded-full text-sm font-medium">
+            <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-mono uppercase tracking-wider backdrop-blur-sm">
               {featuredContent.tagline}
             </span>
           </div>
           
           {/* Featured image */}
-          <div className="mb-6 max-w-md">
+          <div className="mb-6 max-w-md rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-[1.02]">
             <img 
               src={getImage()}
               alt={getTitle()}
-              className="w-full h-auto object-cover rounded-lg shadow-md"
+              className="w-full h-auto object-cover rounded-lg"
             />
           </div>
           
-          <h1 className="text-3xl md:text-4xl font-medium mb-2">{getTitle()}</h1>
-          
-          {getSubtitle() && (
-            <h2 className="text-xl md:text-2xl font-light mb-4 text-gray-700">{getSubtitle()}</h2>
-          )}
-          
-          <p className="text-base mb-8 max-w-xl text-gray-700">
-            {getDescription()}
-          </p>
-          
-          <Link 
-            href={`#${featuredContent.type}s`} 
-            className="inline-block px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors text-sm w-fit"
-          >
-            Learn More
-          </Link>
+          <div className="backdrop-blur-[2px] bg-white/10 p-4 rounded-lg shadow-sm">
+            <h1 className="font-display text-display mb-2">{getTitle()}</h1>
+            
+            {getSubtitle() && (
+              <h2 className="text-subtitle font-light mb-4 text-surface-600">{getSubtitle()}</h2>
+            )}
+            
+            <p className="text-base mb-8 max-w-xl text-surface-700">
+              {getDescription()}
+            </p>
+            
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-fit"
+              rightIcon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              }
+              onClick={() => {
+                document.getElementById(featuredContent.type + 's')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Learn More
+            </Button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-700 opacity-0 animate-in fade-in delay-500">
+        <div 
+          className="flex flex-col items-center cursor-pointer group"
+          onClick={() => document.getElementById('releases')?.scrollIntoView({ behavior: 'smooth' })}
+        >
+          <span className="text-surface-700 text-xs font-mono tracking-wider mb-2 group-hover:text-primary transition-colors">
+            SCROLL
+          </span>
+          <div className="animate-bounce">
+            <ArrowDown className="text-surface-600 group-hover:text-primary transition-colors" size={18} />
+          </div>
         </div>
       </div>
     </section>

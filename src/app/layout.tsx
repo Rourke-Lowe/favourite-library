@@ -2,6 +2,7 @@
 import './globals.css';
 import ParallaxBackground from '@/components/ParallaxBackground';
 import { AudioProvider } from '@/context/AudioContext';
+import { ModalProvider } from '@/context/ModalContext';
 
 export const metadata = {
   title: 'Favorite Library',
@@ -19,7 +20,9 @@ export default function RootLayout({
         <div className="main-content min-h-screen">
           <ParallaxBackground />
           <AudioProvider>
-            {children}
+            <ModalProvider>
+              {children}
+            </ModalProvider>
           </AudioProvider>
         </div>
       </body>

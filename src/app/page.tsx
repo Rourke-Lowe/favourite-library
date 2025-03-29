@@ -1,11 +1,13 @@
 // src/app/page.tsx
 import Hero from '@/components/sections/Hero';
+import About from '@/components/sections/About';
 import Navbar from '@/components/layout/Navbar';
 import Artists from '@/components/sections/Artists';
 import Releases from '@/components/sections/Releases';
 import Moodboard from '@/components/sections/Moodboard';
 import Shows from '@/components/sections/Shows';
 import Merch from '@/components/sections/Merch';
+import Contact from '@/components/sections/Contact';
 import AudioPlayer from '@/components/player/AudioPlayer';
 
 export default function Home() {
@@ -13,12 +15,13 @@ export default function Home() {
     <main>
       <Hero />
       <Navbar />
-      <Releases />
-      <Shows />
+      <About />
       <Artists />
+      <Shows />
+      <Releases />
       <Moodboard />
-      <Merch />
-      <AudioPlayer />
+      <Contact /> 
+
     </main>
   );
 }
