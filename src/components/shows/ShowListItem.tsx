@@ -1,6 +1,6 @@
 // src/components/shows/ShowListItem.tsx
 import React from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { DateDisplay } from '@/components/shows/DateDisplay';
 
