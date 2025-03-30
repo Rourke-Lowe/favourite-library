@@ -1,32 +1,30 @@
-// src/components/ParallaxBackground.tsx
+// src/components/CssParallaxBackground.tsx
 'use client';
-import { useEffect, useRef } from 'react';
-import { throttle } from '@/utils/throttle';
+import { useEffect } from 'react';
 
 interface ParallaxLayer {
   image: string;
-  speed: number; // between 0.1 (slow) and 0.9 (fast)
+  speed: number; // CSS variable value (percent)
   zIndex: number;
   opacity: number;
-  position?: 'foreground' | 'midground' | 'background';
 }
 
 const parallaxLayers: ParallaxLayer[] = [
   {
     image: '/images/parallax/layer1.png',
-    speed: 0,
+    speed: 0,    // Stationary background
     zIndex: -30,
     opacity: 1.0
   },
   {
     image: '/images/parallax/layer2.png',
-    speed: 0.05,
+    speed: 5,    // Moves at 5% of scroll speed
     zIndex: -20,
     opacity: 1.0
   },
   {
     image: '/images/parallax/layer3.png',
-    speed: -0.15,
+    speed: -15,  // Moves at -15% of scroll speed (opposite direction)
     zIndex: -10,
     opacity: 1.0
   }
@@ -48,27 +46,60 @@ export function ParallaxPreload() {
   );
 }
 
-export default function ParallaxBackground() {
-  const layerRefs = useRef<HTMLDivElement[]>([]);
-
+export default function CssParallaxBackground() {
+  // Set up CSS custom properties once on component mount
   useEffect(() => {
-    const handleScroll = throttle(() => {
-      const scrollPosition = window.scrollY;
+    // Add the CSS for the parallax effect
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Base styles for the parallax container */
+      .parallax-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+      }
       
-      layerRefs.current.forEach((layer, index) => {
-        if (layer) {
-          // Move layers at different speeds
-          const yOffset = scrollPosition * parallaxLayers[index].speed;
-          layer.style.transform = `translate3d(0, ${yOffset}px, 0)`;
+      /* Base styles for all parallax layers */
+      .parallax-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        will-change: transform;
+      }
+      
+      /* CSS-only parallax effect using transform and perspective */
+      @media (prefers-reduced-motion: no-preference) {
+        .parallax-container {
+          perspective: 1px;
         }
-      });
-    }, 10); // More frequent updates for smoother parallax
+        
+        .parallax-layer-0 {
+          transform: translateZ(0); /* No movement */
+        }
+        
+        .parallax-layer-1 {
+          transform: translateZ(-0.05px) scale(1.05); /* Adjust scale to compensate for perspective */
+        }
+        
+        .parallax-layer-2 {
+          transform: translateZ(0.15px) scale(0.85); /* Adjust scale to compensate for perspective */
+        }
+      }
+    `;
+    document.head.appendChild(style);
     
-    window.addEventListener('scroll', handleScroll);
-    // Initial positioning
-    handleScroll();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   return (
@@ -76,10 +107,7 @@ export default function ParallaxBackground() {
       {parallaxLayers.map((layer, index) => (
         <div
           key={index}
-          ref={el => {
-            if (el) layerRefs.current[index] = el;
-          }}
-          className={`parallax-layer ${layer.position}`}
+          className={`parallax-layer parallax-layer-${index}`}
           style={{
             zIndex: layer.zIndex,
             opacity: layer.opacity,

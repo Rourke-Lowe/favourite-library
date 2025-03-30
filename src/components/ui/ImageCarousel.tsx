@@ -1,6 +1,7 @@
-// src/components/ui/ImageCarousel.tsx
+// src/components/ui/ImageCarousel.tsx - Updated for mobile
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 const ImageCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -9,6 +10,7 @@ const ImageCarousel: React.FC = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isMobile = useMediaQuery('(max-width: 768px)');
   
   // Reduced to 6 images as requested
   const imagePaths = [
@@ -120,30 +122,58 @@ const ImageCarousel: React.FC = () => {
     let opacity = 1;
     let rotate = 0;
     
-    // Increase spacing and make active card more prominent
-    if (position === 0) {
-      // Active card - make it larger
-      scale = 2; // Increased scale for larger active card
-      zIndex = 20;
+    // Apply different styling based on device type
+    if (isMobile) {
+      // Mobile-specific adjustments
+      if (position === 0) {
+        // Active card - make it appropriately sized for mobile
+        scale = 1.1; // Reduced scale for mobile
+        zIndex = 20;
+      } else {
+        // Cards to the right
+        if (position > 0 && position <= Math.floor(imagePaths.length / 2)) {
+          // Reduced spacing for mobile
+          xTranslate = 120 + (position - 1) * 60; 
+          scale = 0.8 - (position * 0.05);
+          opacity = 0.8 - (position * 0.15);
+          rotate = 8 + (position * 4); // Less rotation on mobile
+        } 
+        // Cards to the left
+        else {
+          const adjustedPosition = position > Math.floor(imagePaths.length / 2) 
+            ? position - imagePaths.length 
+            : position;
+          // Reduced spacing for mobile
+          xTranslate = -120 + (adjustedPosition + 1) * 60; 
+          scale = 0.8 - (Math.abs(adjustedPosition) * 0.05);
+          opacity = 0.8 - (Math.abs(adjustedPosition) * 0.15);
+          rotate = -8 + (adjustedPosition * 4); // Less rotation on mobile
+        }
+      }
     } else {
-      // Cards to the right
-      if (position > 0 && position <= Math.floor(imagePaths.length / 2)) {
-        // Significantly increased spacing between cards
-        xTranslate = 240 + (position - 1) * 120; 
-        scale = 0.85 - (position * 0.05);
-        opacity = 0.9 - (position * 0.15);
-        rotate = 12 + (position * 6); // More pronounced rotation
-      } 
-      // Cards to the left
-      else {
-        const adjustedPosition = position > Math.floor(imagePaths.length / 2) 
-          ? position - imagePaths.length 
-          : position;
-        // Significantly increased spacing between cards
-        xTranslate = -240 + (adjustedPosition + 1) * 120; 
-        scale = 0.85 - (Math.abs(adjustedPosition) * 0.05);
-        opacity = 0.9 - (Math.abs(adjustedPosition) * 0.15);
-        rotate = -12 + (adjustedPosition * 6); // More pronounced rotation
+      // Desktop styles (original)
+      if (position === 0) {
+        // Active card - make it larger
+        scale = 2; // Original desktop scale
+        zIndex = 20;
+      } else {
+        // Cards to the right
+        if (position > 0 && position <= Math.floor(imagePaths.length / 2)) {
+          xTranslate = 240 + (position - 1) * 120; 
+          scale = 0.85 - (position * 0.05);
+          opacity = 0.9 - (position * 0.15);
+          rotate = 12 + (position * 6);
+        } 
+        // Cards to the left
+        else {
+          const adjustedPosition = position > Math.floor(imagePaths.length / 2) 
+            ? position - imagePaths.length 
+            : position;
+          xTranslate = -240 + (adjustedPosition + 1) * 120; 
+          scale = 0.85 - (Math.abs(adjustedPosition) * 0.05);
+          opacity = 0.9 - (Math.abs(adjustedPosition) * 0.15);
+          rotate = -12 + (adjustedPosition * 6);
+        }
       }
     }
     
@@ -169,7 +199,8 @@ const ImageCarousel: React.FC = () => {
     <div 
       className={cn(
         "relative w-full overflow-hidden py-10",
-        !carouselReady && "min-h-[28rem]" // Maintain height when loading
+        !carouselReady && "min-h-[28rem]", // Maintain height when loading
+        isMobile && "min-h-[22rem]" // Reduced height on mobile
       )}
       ref={carouselRef}
     >
@@ -181,13 +212,18 @@ const ImageCarousel: React.FC = () => {
       )}
       
       <div className={cn(
-        "flex justify-center items-center h-[28rem] perspective-1000",
+        "flex justify-center items-center",
+        isMobile ? "h-[20rem]" : "h-[28rem]", // Adjust height based on device
+        "perspective-1000",
         !carouselReady && "opacity-0" // Hide until images are loaded
       )}>
         {imagePaths.map((path, index) => (
           <div
             key={path}
-            className="absolute w-80 h-[26rem] transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden"
+            className={cn(
+              "absolute transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden",
+              isMobile ? "w-60 h-[16rem]" : "w-80 h-[26rem]" // Responsive sizing
+            )}
             style={getCardStyle(index)}
             onClick={() => {
               setActiveIndex(index);

@@ -1,7 +1,6 @@
 // src/components/layout/Navbar.tsx
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { throttle } from '@/utils/throttle';
 import Image from 'next/image';
 
 const Navbar = () => {
@@ -9,13 +8,13 @@ const Navbar = () => {
   const [isSticky, setIsSticky] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const observerTargetRef = useRef<HTMLDivElement>(null);
-  const isInitialRender = useRef(true);
-
+  const sectionObserversRef = useRef<IntersectionObserver | null>(null);
+  
+  // Set up intersection observer for sticky detection
   useEffect(() => {
-    // Set up intersection observer for sticky detection
     const observerTarget = observerTargetRef.current;
     if (observerTarget) {
-      const observer = new IntersectionObserver(
+      const stickyObserver = new IntersectionObserver(
         ([entry]) => {
           // When target is not intersecting (out of view), navbar should be sticky
           setIsSticky(!entry.isIntersecting);
@@ -23,57 +22,79 @@ const Navbar = () => {
         { threshold: 0 }
       );
       
-      observer.observe(observerTarget);
+      stickyObserver.observe(observerTarget);
       
       // Clean up observer
-      return () => observer.disconnect();
+      return () => stickyObserver.disconnect();
     }
   }, []);
 
+  // Set up intersection observers for section detection
   useEffect(() => {
-    const handleScroll = throttle(() => {
-      // Determine active section for menu highlighting
-      const sections = ['hero', 'about', 'artists', 'shows', 'releases', 'moodboard'];
-      let bestVisibilityScore = 0;
-      let bestSection = 'hero';
-      
-      sections.forEach(sectionId => {
-        const element = document.getElementById(sectionId);
-        if (!element) return;
+    // Define array of section IDs in order
+    const sections = ['hero', 'about', 'artists', 'shows', 'releases', 'moodboard'];
+    
+    // Options for the IntersectionObserver
+    // Using multiple thresholds for better accuracy
+    const options = {
+      rootMargin: '-10% 0px -70% 0px', // Bias toward the top of the section
+      threshold: [0.1, 0.25, 0.5] // Multiple thresholds for better accuracy
+    };
+    
+    // Track the currently active section with the highest visibility
+    let currentActiveSection = '';
+    const visibilityScores = new Map();
+    
+    // Create a single observer for all sections
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        // Get the section ID
+        const id = entry.target.id;
         
-        const rect = element.getBoundingClientRect();
+        // Calculate and store visibility score based on intersection ratio
+        // and position in viewport (center bias)
+        const rect = entry.boundingClientRect;
         const windowHeight = window.innerHeight;
-        
-        // Calculate visibility score
-        const visibleTop = Math.max(0, rect.top);
-        const visibleBottom = Math.min(windowHeight, rect.bottom);
-        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-        
-        // Prioritize sections in the center
         const centerFactor = 1 - Math.abs((rect.top + rect.bottom) / 2 - windowHeight / 2) / windowHeight;
-        const visibilityScore = (visibleHeight / windowHeight) * centerFactor * 2;
+        const visibilityScore = entry.intersectionRatio * centerFactor * 2;
         
-        if (visibilityScore > bestVisibilityScore) {
-          bestVisibilityScore = visibilityScore;
-          bestSection = sectionId;
+        // Store the score
+        visibilityScores.set(id, visibilityScore);
+      });
+      
+      // Find the section with the highest visibility score
+      let bestVisibilityScore = 0;
+      
+      sections.forEach((section) => {
+        const score = visibilityScores.get(section) || 0;
+        if (score > bestVisibilityScore) {
+          bestVisibilityScore = score;
+          currentActiveSection = section;
         }
       });
       
-      setActiveSection(bestSection);
-    }, 100);
+      // Update the active section if necessary
+      if (currentActiveSection && currentActiveSection !== activeSection) {
+        setActiveSection(currentActiveSection);
+      }
+    }, options);
     
-    window.addEventListener('scroll', handleScroll);
+    // Observe all sections
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        observer.observe(element);
+      }
+    });
     
-    // Initial check (only once)
-    if (isInitialRender.current) {
-      handleScroll();
-      isInitialRender.current = false;
-    }
+    // Store the observer for cleanup
+    sectionObserversRef.current = observer;
     
+    // Clean up
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
     };
-  }, [isSticky]);
+  }, [activeSection]);
 
   // Handle smooth scrolling when clicking navigation links
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
