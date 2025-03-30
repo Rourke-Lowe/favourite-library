@@ -12,19 +12,19 @@ interface ParallaxLayer {
 
 const parallaxLayers: ParallaxLayer[] = [
   {
-    image: '/images/parallax/layer1.png',
+    image: '/images/parallax/layer1.svg',
     speed: 0,
     zIndex: -30,
     opacity: 1.0
   },
   {
-    image: '/images/parallax/layer2.png',
+    image: '/images/parallax/layer2.svg',
     speed: 0.05,
     zIndex: -20,
     opacity: 1.0
   },
   {
-    image: '/images/parallax/layer3.png',
+    image: '/images/parallax/layer3.svg',
     speed: -0.15,
     zIndex: -10,
     opacity: 1.0
