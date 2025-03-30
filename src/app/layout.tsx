@@ -38,7 +38,6 @@ export default function RootLayout({
         ))}
       </head>
       <body className="antialiased">
-        <ResourcePriorityProvider>
           <div className="main-content min-h-screen">
             <ParallaxBackground />
             <AudioProvider>
@@ -47,7 +46,6 @@ export default function RootLayout({
               </ModalProvider>
             </AudioProvider>
           </div>
-        </ResourcePriorityProvider>
       </body>
     </html>
   );

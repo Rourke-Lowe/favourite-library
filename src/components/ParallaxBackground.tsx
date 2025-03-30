@@ -1,12 +1,11 @@
-// src/components/ParallaxBackground.tsx - Updated
+// src/components/ParallaxBackground.tsx
 'use client';
 import { useEffect, useRef } from 'react';
 import { throttle } from '@/utils/throttle';
-import { useResourcePriority } from '@/context/ResourcePriorityContext';
 
 interface ParallaxLayer {
   image: string;
-  speed: number;
+  speed: number; // between 0.1 (slow) and 0.9 (fast)
   zIndex: number;
   opacity: number;
   position?: 'foreground' | 'midground' | 'background';
@@ -33,35 +32,44 @@ const parallaxLayers: ParallaxLayer[] = [
   }
 ];
 
+// Export this to use in layout.tsx
+export function ParallaxPreload() {
+  return (
+    <>
+      {parallaxLayers.map((layer, index) => (
+        <link 
+          key={`parallax-preload-${index}`}
+          rel="preload" 
+          href={layer.image} 
+          as="image" 
+        />
+      ))}
+    </>
+  );
+}
+
 export default function ParallaxBackground() {
   const layerRefs = useRef<HTMLDivElement[]>([]);
-  const { registerResource, isResourceLoaded } = useResourcePriority();
-  
-  // Register all parallax layers as critical resources
-  useEffect(() => {
-    parallaxLayers.forEach((layer, index) => {
-      registerResource(`parallax-layer-${index}`, layer.image, 'background', 'critical');
-    });
-  }, [registerResource]);
 
-  // Set up parallax scrolling
   useEffect(() => {
     const handleScroll = throttle(() => {
       const scrollPosition = window.scrollY;
       
       layerRefs.current.forEach((layer, index) => {
-        if (layer && isResourceLoaded(`parallax-layer-${index}`)) {
+        if (layer) {
+          // Move layers at different speeds
           const yOffset = scrollPosition * parallaxLayers[index].speed;
           layer.style.transform = `translate3d(0, ${yOffset}px, 0)`;
         }
       });
-    }, 10);
+    }, 10); // More frequent updates for smoother parallax
     
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial positioning
+    // Initial positioning
+    handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isResourceLoaded]);
+  }, []);
 
   return (
     <div className="parallax-container">
@@ -74,21 +82,9 @@ export default function ParallaxBackground() {
           className={`parallax-layer ${layer.position}`}
           style={{
             zIndex: layer.zIndex,
-            opacity: isResourceLoaded(`parallax-layer-${index}`) ? layer.opacity : 0,
-            backgroundImage: isResourceLoaded(`parallax-layer-${index}`) ? `url(${layer.image})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            willChange: 'transform',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-            transition: 'opacity 0.5s ease'
+            opacity: layer.opacity,
+            backgroundImage: `url(${layer.image})`
           }}
-          aria-hidden="true"
         />
       ))}
     </div>

@@ -1,14 +1,14 @@
 // src/components/ui/ImageCarousel.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 const ImageCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [carouselReady, setCarouselReady] = useState(false);
-  const [imageStatuses, setImageStatuses] = useState<Record<number, boolean>>({});
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
   const carouselRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Reduced to 6 images as requested
   const imagePaths = [
@@ -20,36 +20,36 @@ const ImageCarousel: React.FC = () => {
     "/images/gallery/image-6.jpg",
   ];
 
-  // Force load all images at initialization
+  // Preload critical images
   useEffect(() => {
-    const imagePromises = imagePaths.map((path, index) => {
-      return new Promise<number>((resolve, reject) => {
+    // Preload first three images (most critical for initial view)
+    const criticalImages = imagePaths.slice(0, 3);
+    
+    const preloadPromises = criticalImages.map((path, index) => {
+      return new Promise<number>((resolve) => {
         const img = new Image();
         img.src = path;
-        img.onload = () => resolve(index);
+        img.onload = () => {
+          setLoadedImages(prev => new Set([...prev, index]));
+          resolve(index);
+        };
         img.onerror = () => {
           console.error(`Failed to load image: ${path}`);
-          resolve(index); // Resolve anyway to prevent blocking
+          resolve(index); // Resolve anyway
         };
         
-        // Set a timeout to resolve anyway after 5 seconds to prevent indefinite waiting
-        setTimeout(() => resolve(index), 5000);
+        // Set a timeout to resolve anyway after 3 seconds
+        setTimeout(() => resolve(index), 3000);
       });
     });
 
-    // Mark carousel as ready when all images are loaded or after timeout
-    Promise.all(imagePromises).then((loadedIndices) => {
-      const statusMap = loadedIndices.reduce((acc, index) => {
-        acc[index] = true;
-        return acc;
-      }, {} as Record<number, boolean>);
-      
-      setImageStatuses(statusMap);
+    // When critical images are loaded, start carousel
+    Promise.all(preloadPromises).then(() => {
       setCarouselReady(true);
     });
 
-    // Add preload links for the first 3 images
-    imagePaths.slice(0, 3).forEach(path => {
+    // Add preload links
+    criticalImages.forEach(path => {
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'image';
@@ -57,32 +57,57 @@ const ImageCarousel: React.FC = () => {
       document.head.appendChild(link);
     });
 
+    // Load remaining images in background
+    imagePaths.slice(3).forEach((path, i) => {
+      const actualIndex = i + 3;
+      const img = new Image();
+      img.src = path;
+      img.onload = () => {
+        setLoadedImages(prev => new Set([...prev, actualIndex]));
+      };
+    });
+
     return () => {
       // Clean up preload links
       document.querySelectorAll('link[rel="preload"][as="image"]').forEach(el => {
         const href = el.getAttribute('href');
-        if (href && imagePaths.includes(href)) {
+        if (href && criticalImages.includes(href)) {
           document.head.removeChild(el);
         }
       });
     };
   }, [imagePaths]);
+
+  // Function to advance to next slide
+  const advanceCarousel = useCallback(() => {
+    setActiveIndex(current => {
+      const next = (current + 1) % imagePaths.length;
+      // Preload the next image that will be shown
+      setLoadedImages(prev => new Set([...prev, next, (next + 1) % imagePaths.length]));
+      return next;
+    });
+  }, [imagePaths.length]);
   
-  // Auto-scroll effect - only start when carousel is ready
+  // Auto-scroll without pausing on hover
   useEffect(() => {
-    if (!isPaused && carouselReady) {
-      const interval = setInterval(() => {
-        setActiveIndex((current) => {
-          const next = (current + 1) % imagePaths.length;
-          // Preload the next image that will be shown
-          setLoadedImages(prev => new Set([...prev, next, (next + 1) % imagePaths.length]));
-          return next;
-        });
-      }, 2500);
+    if (carouselReady) {
+      // Clear any existing interval first
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
       
-      return () => clearInterval(interval);
+      // Create new interval that keeps going regardless of hover
+      intervalRef.current = setInterval(advanceCarousel, 4000);
+      
+      // Cleanup function
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      };
     }
-  }, [isPaused, carouselReady, imagePaths.length]);
+  }, [carouselReady, advanceCarousel]);
   
   // Calculate position and styles for each card
   const getCardStyle = (index: number) => {
@@ -129,15 +154,15 @@ const ImageCarousel: React.FC = () => {
     };
   };
 
-  // Handle image load/error events
-  const handleImageLoad = (index: number) => {
-    setImageStatuses(prev => ({ ...prev, [index]: true }));
-  };
-
-  const handleImageError = (index: number) => {
-    console.error(`Error loading image at index ${index}`);
-    // Mark as loaded anyway to prevent blocking the UI
-    setImageStatuses(prev => ({ ...prev, [index]: true }));
+  // Force load an image if it's not loaded yet
+  const forceLoadImage = (index: number) => {
+    if (!loadedImages.has(index) && imageRefs.current[index]) {
+      const img = new Image();
+      img.src = imagePaths[index];
+      img.onload = () => {
+        setLoadedImages(prev => new Set([...prev, index]));
+      };
+    }
   };
   
   return (
@@ -146,8 +171,6 @@ const ImageCarousel: React.FC = () => {
         "relative w-full overflow-hidden py-10",
         !carouselReady && "min-h-[28rem]" // Maintain height when loading
       )}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       ref={carouselRef}
     >
       {/* Loading state */}
@@ -166,20 +189,22 @@ const ImageCarousel: React.FC = () => {
             key={path}
             className="absolute w-80 h-[26rem] transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden"
             style={getCardStyle(index)}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => {
+              setActiveIndex(index);
+              forceLoadImage(index); // Ensure image is loaded when clicked
+            }}
+            onMouseEnter={() => forceLoadImage(index)} // Preload on hover
           >
-            {/* Low-quality placeholder image (blurred version) */}
+            {/* Low-quality placeholder */}
             <div 
               className={cn(
                 "absolute inset-0 bg-gray-200",
-                imageStatuses[index] ? "opacity-0" : "opacity-100"
+                loadedImages.has(index) ? "opacity-0" : "opacity-100"
               )}
               style={{ 
                 transition: 'opacity 0.3s ease-in-out',
-                backgroundImage: `url(${path})`,
                 backgroundSize: 'cover',
-                filter: 'blur(10px)',
-                transform: 'scale(1.1)'
+                backgroundColor: '#f0f0f0'
               }}
             />
             
@@ -190,10 +215,20 @@ const ImageCarousel: React.FC = () => {
               alt={`Gallery image ${index + 1}`}
               className={cn(
                 "w-full h-full object-cover transition-opacity duration-300",
-                imageStatuses[index] ? "opacity-100" : "opacity-0"
+                loadedImages.has(index) ? "opacity-100" : "opacity-0"
               )}
-              onLoad={() => handleImageLoad(index)}
-              onError={() => handleImageError(index)}
+              onLoad={() => {
+                setLoadedImages(prev => new Set([...prev, index]));
+              }}
+              onError={() => {
+                console.error(`Error loading image at index ${index}`);
+                // Try again once
+                setTimeout(() => {
+                  if (imageRefs.current[index]) {
+                    imageRefs.current[index]!.src = path;
+                  }
+                }, 1000);
+              }}
               loading={index < 3 ? "eager" : "lazy"}
             />
           </div>
@@ -211,7 +246,10 @@ const ImageCarousel: React.FC = () => {
             className={`w-2 h-2 mx-2 rounded-full transition-all ${
               index === activeIndex ? 'bg-primary w-4' : 'bg-surface-300'
             }`}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => {
+              setActiveIndex(index);
+              forceLoadImage(index); // Make sure the image loads when dot is clicked
+            }}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
