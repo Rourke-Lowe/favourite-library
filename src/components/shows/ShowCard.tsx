@@ -30,6 +30,7 @@ const ShowCard: React.FC<ShowCardProps> = ({
             src={show.image}
             alt={show.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
           />
           
           {/* Series badge removed as requested */}
