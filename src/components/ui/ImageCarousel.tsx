@@ -1,11 +1,14 @@
 // src/components/ui/ImageCarousel.tsx
 import React, { useState, useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 const ImageCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set([0, 1])); // Only preload first two
+  const [carouselReady, setCarouselReady] = useState(false);
+  const [imageStatuses, setImageStatuses] = useState<Record<number, boolean>>({});
   const carouselRef = useRef<HTMLDivElement>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   
   // Reduced to 6 images as requested
   const imagePaths = [
@@ -16,10 +19,58 @@ const ImageCarousel: React.FC = () => {
     "/images/gallery/image-5.jpg",
     "/images/gallery/image-6.jpg",
   ];
-  
-  // Auto-scroll effect
+
+  // Force load all images at initialization
   useEffect(() => {
-    if (!isPaused) {
+    const imagePromises = imagePaths.map((path, index) => {
+      return new Promise<number>((resolve, reject) => {
+        const img = new Image();
+        img.src = path;
+        img.onload = () => resolve(index);
+        img.onerror = () => {
+          console.error(`Failed to load image: ${path}`);
+          resolve(index); // Resolve anyway to prevent blocking
+        };
+        
+        // Set a timeout to resolve anyway after 5 seconds to prevent indefinite waiting
+        setTimeout(() => resolve(index), 5000);
+      });
+    });
+
+    // Mark carousel as ready when all images are loaded or after timeout
+    Promise.all(imagePromises).then((loadedIndices) => {
+      const statusMap = loadedIndices.reduce((acc, index) => {
+        acc[index] = true;
+        return acc;
+      }, {} as Record<number, boolean>);
+      
+      setImageStatuses(statusMap);
+      setCarouselReady(true);
+    });
+
+    // Add preload links for the first 3 images
+    imagePaths.slice(0, 3).forEach(path => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = path;
+      document.head.appendChild(link);
+    });
+
+    return () => {
+      // Clean up preload links
+      document.querySelectorAll('link[rel="preload"][as="image"]').forEach(el => {
+        const href = el.getAttribute('href');
+        if (href && imagePaths.includes(href)) {
+          document.head.removeChild(el);
+        }
+      });
+    };
+  }, [imagePaths]);
+  
+  // Auto-scroll effect - only start when carousel is ready
+  useEffect(() => {
+    if (!isPaused && carouselReady) {
       const interval = setInterval(() => {
         setActiveIndex((current) => {
           const next = (current + 1) % imagePaths.length;
@@ -31,32 +82,7 @@ const ImageCarousel: React.FC = () => {
       
       return () => clearInterval(interval);
     }
-  }, [isPaused, imagePaths.length]);
-  
-  // Preload active and adjacent images
-  useEffect(() => {
-    // Preload active, previous, and next images
-    const imagesToPreload = [
-      activeIndex,
-      (activeIndex + 1) % imagePaths.length,
-      (activeIndex - 1 + imagePaths.length) % imagePaths.length
-    ];
-    
-    // Preload these images
-    const preloadImages = () => {
-      imagesToPreload.forEach(idx => {
-        if (!loadedImages.has(idx)) {
-          const img = new Image();
-          img.onload = () => {
-            setLoadedImages(prev => new Set([...prev, idx]));
-          };
-          img.src = imagePaths[idx];
-        }
-      });
-    };
-    
-    preloadImages();
-  }, [activeIndex, imagePaths, loadedImages]);
+  }, [isPaused, carouselReady, imagePaths.length]);
   
   // Calculate position and styles for each card
   const getCardStyle = (index: number) => {
@@ -102,47 +128,83 @@ const ImageCarousel: React.FC = () => {
       opacity
     };
   };
+
+  // Handle image load/error events
+  const handleImageLoad = (index: number) => {
+    setImageStatuses(prev => ({ ...prev, [index]: true }));
+  };
+
+  const handleImageError = (index: number) => {
+    console.error(`Error loading image at index ${index}`);
+    // Mark as loaded anyway to prevent blocking the UI
+    setImageStatuses(prev => ({ ...prev, [index]: true }));
+  };
   
   return (
     <div 
-      className="relative w-full overflow-hidden py-10"
+      className={cn(
+        "relative w-full overflow-hidden py-10",
+        !carouselReady && "min-h-[28rem]" // Maintain height when loading
+      )}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       ref={carouselRef}
     >
-      <div className="flex justify-center items-center h-[28rem] perspective-1000">
-        {imagePaths.map((path, index) => {
-          const isLoaded = loadedImages.has(index);
-          const isVisible = index === activeIndex || 
-                            index === (activeIndex + 1) % imagePaths.length || 
-                            index === (activeIndex - 1 + imagePaths.length) % imagePaths.length;
-          
-          return (
-            <div
-              key={path}
-              className="absolute w-80 h-[26rem] transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden"
-              style={getCardStyle(index)}
-              onClick={() => setActiveIndex(index)}
-            >
-              {isLoaded || isVisible ? (
-                <img 
-                  src={path} 
-                  alt={`Gallery image ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  loading={index <= 1 ? "eager" : "lazy"}
-                  decoding={index <= 1 ? "sync" : "async"}
-                  fetchpriority={index === activeIndex ? "high" : "low"}
-                />
-              ) : (
-                <div className="w-full h-full bg-surface-200 animate-pulse"></div>
+      {/* Loading state */}
+      {!carouselReady && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/10 backdrop-blur-sm">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      
+      <div className={cn(
+        "flex justify-center items-center h-[28rem] perspective-1000",
+        !carouselReady && "opacity-0" // Hide until images are loaded
+      )}>
+        {imagePaths.map((path, index) => (
+          <div
+            key={path}
+            className="absolute w-80 h-[26rem] transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden"
+            style={getCardStyle(index)}
+            onClick={() => setActiveIndex(index)}
+          >
+            {/* Low-quality placeholder image (blurred version) */}
+            <div 
+              className={cn(
+                "absolute inset-0 bg-gray-200",
+                imageStatuses[index] ? "opacity-0" : "opacity-100"
               )}
-            </div>
-          );
-        })}
+              style={{ 
+                transition: 'opacity 0.3s ease-in-out',
+                backgroundImage: `url(${path})`,
+                backgroundSize: 'cover',
+                filter: 'blur(10px)',
+                transform: 'scale(1.1)'
+              }}
+            />
+            
+            {/* Actual image */}
+            <img 
+              ref={el => { imageRefs.current[index] = el }}
+              src={path} 
+              alt={`Gallery image ${index + 1}`}
+              className={cn(
+                "w-full h-full object-cover transition-opacity duration-300",
+                imageStatuses[index] ? "opacity-100" : "opacity-0"
+              )}
+              onLoad={() => handleImageLoad(index)}
+              onError={() => handleImageError(index)}
+              loading={index < 3 ? "eager" : "lazy"}
+            />
+          </div>
+        ))}
       </div>
       
       {/* Navigation dots */}
-      <div className="flex justify-center mt-6 mb-2">
+      <div className={cn(
+        "flex justify-center mt-6 mb-2",
+        !carouselReady && "opacity-0"
+      )}>
         {imagePaths.map((_, index) => (
           <button
             key={index}
