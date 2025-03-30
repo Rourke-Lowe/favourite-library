@@ -165,6 +165,40 @@
   will-change: transform; /* Optimization for animations */
 }
 
+.parallax-layer {
+  /* Ensure proper rendering of transparent PNGs */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  
+  /* Force hardware acceleration to fix rendering issues */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  
+  /* Additional fixes for Safari */
+  -webkit-backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  backface-visibility: hidden;
+  perspective: 1000;
+  
+  /* Clear any potential borders */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  .parallax-layer {
+    /* Add a slight scale to ensure no white borders appear */
+    transform: scale(1.01);
+    -webkit-transform: scale(1.01);
+  }
+}
+
 .background {
   background-position: center bottom;
 }

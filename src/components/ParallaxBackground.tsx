@@ -1,30 +1,31 @@
-// src/components/CssParallaxBackground.tsx
+// src/components/ParallaxBackground.tsx
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ParallaxLayer {
   image: string;
-  speed: number; // CSS variable value (percent)
+  speed: number; // between 0.1 (slow) and 0.9 (fast)
   zIndex: number;
   opacity: number;
+  position?: 'foreground' | 'midground' | 'background';
 }
 
 const parallaxLayers: ParallaxLayer[] = [
   {
     image: '/images/parallax/layer1.png',
-    speed: 0,    // Stationary background
+    speed: 0,
     zIndex: -30,
     opacity: 1.0
   },
   {
     image: '/images/parallax/layer2.png',
-    speed: 5,    // Moves at 5% of scroll speed
+    speed: 0.05,
     zIndex: -20,
     opacity: 1.0
   },
   {
     image: '/images/parallax/layer3.png',
-    speed: -15,  // Moves at -15% of scroll speed (opposite direction)
+    speed: -0.15,
     zIndex: -10,
     opacity: 1.0
   }
@@ -46,72 +47,85 @@ export function ParallaxPreload() {
   );
 }
 
-export default function CssParallaxBackground() {
-  // Set up CSS custom properties once on component mount
+export default function ParallaxBackground() {
+  const layerRefs = useRef<HTMLDivElement[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
+  
+  // Use requestAnimationFrame for smooth animations
   useEffect(() => {
-    // Add the CSS for the parallax effect
-    const style = document.createElement('style');
-    style.textContent = `
-      /* Base styles for the parallax container */
-      .parallax-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        pointer-events: none;
-      }
-      
-      /* Base styles for all parallax layers */
-      .parallax-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        will-change: transform;
-      }
-      
-      /* CSS-only parallax effect using transform and perspective */
-      @media (prefers-reduced-motion: no-preference) {
-        .parallax-container {
-          perspective: 1px;
-        }
-        
-        .parallax-layer-0 {
-          transform: translateZ(0); /* No movement */
-        }
-        
-        .parallax-layer-1 {
-          transform: translateZ(-0.05px) scale(1.05); /* Adjust scale to compensate for perspective */
-        }
-        
-        .parallax-layer-2 {
-          transform: translateZ(0.15px) scale(0.85); /* Adjust scale to compensate for perspective */
-        }
-      }
-    `;
-    document.head.appendChild(style);
+    setHasMounted(true);
     
+    // We don't need to update the transform on every scroll event
+    // Instead, we update it on animation frames
+    const updateParallax = () => {
+      const scrollPosition = window.scrollY;
+      
+      // Only update if we have layers
+      if (layerRefs.current.length) {
+        layerRefs.current.forEach((layer, index) => {
+          if (layer) {
+            // Apply transform through style property with hardware acceleration
+            const yOffset = scrollPosition * parallaxLayers[index].speed;
+            layer.style.transform = `translate3d(0, ${yOffset}px, 0)`;
+          }
+        });
+      }
+      
+      // Request next frame
+      rafRef.current = requestAnimationFrame(updateParallax);
+    };
+    
+    // Start the animation loop
+    rafRef.current = requestAnimationFrame(updateParallax);
+    
+    // Clean up
     return () => {
-      document.head.removeChild(style);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, []);
 
+  // Add will-change to optimize browser rendering
+  useEffect(() => {
+    // Add will-change to hint the browser about upcoming transformations
+    // but only after component mounts to avoid unnecessary memory usage on initial load
+    if (hasMounted) {
+      layerRefs.current.forEach((layer) => {
+        if (layer) {
+          layer.style.willChange = 'transform';
+        }
+      });
+      
+      // Remove will-change after a delay to prevent long-term memory impact
+      const timeoutId = setTimeout(() => {
+        layerRefs.current.forEach((layer) => {
+          if (layer) {
+            layer.style.willChange = 'auto';
+          }
+        });
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [hasMounted]);
+
   return (
-    <div className="parallax-container">
+    <div className="parallax-container fixed inset-0 w-full h-full pointer-events-none overflow-hidden">
       {parallaxLayers.map((layer, index) => (
         <div
           key={index}
-          className={`parallax-layer parallax-layer-${index}`}
+          ref={el => {
+            if (el) layerRefs.current[index] = el;
+          }}
+          className={`parallax-layer absolute inset-0 w-full h-full bg-no-repeat bg-cover ${layer.position}`}
           style={{
             zIndex: layer.zIndex,
             opacity: layer.opacity,
-            backgroundImage: `url(${layer.image})`
+            backgroundImage: `url(${layer.image})`,
+            // Use translate3d for hardware acceleration
+            transform: 'translate3d(0, 0, 0)'
           }}
         />
       ))}
