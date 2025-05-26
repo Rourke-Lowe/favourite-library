@@ -5,7 +5,6 @@ import { ExternalLink, Calendar, ChevronDown, Grid, List } from 'lucide-react';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import BottomSheet from '@/components/ui/BottomSheet';
 import { shows } from '@/data/shows';
 import ShowCard from '@/components/shows/ShowCard';
 import ShowListItem from '@/components/shows/ShowListItem';
@@ -71,7 +70,6 @@ const SERIES_OPTIONS = [
 
 const Shows = () => {
   const { openModal } = useModal();
-  const [selectedShow, setSelectedShow] = useState<any | null>(null);
   const [timeFilter, setTimeFilter] = useState<TimeFilterType>('all');
   const [seriesFilter, setSeriesFilter] = useState('all');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -87,12 +85,6 @@ const Shows = () => {
     rootMargin: '200px',
   });
 
-  // Close detail view when switching from mobile to desktop
-  useEffect(() => {
-    if (!isMobile && selectedShow) {
-      document.body.style.overflow = 'auto';
-    }
-  }, [isMobile, selectedShow]);
 
   // Helper function to check if a show is upcoming
   const isUpcoming = (dateString: string) => {
@@ -154,21 +146,15 @@ const Shows = () => {
       });
   }, [timeFilter, seriesFilter, featuredShow.id]);
 
-  // Handle show click for detailed view
   const handleShowClick = (show) => {
-    if (isMobile) {
-      // For mobile, use the bottom sheet
-      setSelectedShow(show);
-    } else {
-      // For desktop, use the global modal
-      openModal(show.title, (
-        <ShowDetail
-          show={show}
-          isUpcoming={isUpcoming(show.date)}
-          formatDate={formatDate}
-        />
-      ));
-    }
+    // For all devices, use the global modal
+    openModal(show.title, (
+      <ShowDetail
+        show={show}
+        isUpcoming={isUpcoming(show.date)}
+        formatDate={formatDate}
+      />
+    ));
   };
   
   // Custom ShowCard optimized for lazy loading
@@ -370,23 +356,6 @@ const Shows = () => {
           </>
         )}
       </div>
-      
-      {/* For mobile, keep using the BottomSheet */}
-      {isMobile && (
-        <BottomSheet
-          isOpen={!!selectedShow}
-          onClose={() => setSelectedShow(null)}
-          title={selectedShow?.title || ''}
-        >
-          {selectedShow && (
-            <ShowDetail
-              show={selectedShow}
-              isUpcoming={isUpcoming(selectedShow.date)}
-              formatDate={formatDate}
-            />
-          )}
-        </BottomSheet>
-      )}
     </section>
   );
 };
