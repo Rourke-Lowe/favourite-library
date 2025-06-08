@@ -1,4 +1,4 @@
-// src/components/ui/ImageCarousel.tsx - Updated for mobile
+// Optimized carousel with proper cleanup and inline visibility detection
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -7,12 +7,13 @@ const ImageCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [carouselReady, setCarouselReady] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const [isCarouselVisible, setIsCarouselVisible] = useState(true); // ✅ MEMORY OPTIMIZATION: Control animations
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const visibilityObserverRef = useRef<IntersectionObserver | null>(null);
   const isMobile = useMediaQuery('(max-width: 768px)');
   
-  // Reduced to 6 images as requested
   const imagePaths = [
     "/images/gallery/image-1.jpg",
     "/images/gallery/image-2.jpg",
@@ -22,150 +23,176 @@ const ImageCarousel: React.FC = () => {
     "/images/gallery/image-6.jpg",
   ];
 
-  // Preload critical images
+  // ✅ MEMORY OPTIMIZATION: Visibility detection to pause animations when off-screen
   useEffect(() => {
-    // Preload first three images (most critical for initial view)
+    const element = carouselRef.current;
+    if (!element) return;
+    
+    visibilityObserverRef.current = new IntersectionObserver(
+      ([entry]) => {
+        setIsCarouselVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+    
+    visibilityObserverRef.current.observe(element);
+    
+    // ✅ CRITICAL: Cleanup observer to prevent memory leaks
+    return () => {
+      if (visibilityObserverRef.current) {
+        visibilityObserverRef.current.disconnect();
+        visibilityObserverRef.current = null;
+      }
+    };
+  }, []);
+
+  // ✅ MEMORY OPTIMIZATION: AbortController prevents memory leaks from cancelled image loads
+  useEffect(() => {
+    const abortController = new AbortController();
     const criticalImages = imagePaths.slice(0, 3);
     
     const preloadPromises = criticalImages.map((path, index) => {
       return new Promise<number>((resolve) => {
+        if (abortController.signal.aborted) {
+          resolve(index);
+          return;
+        }
+        
         const img = new Image();
         img.src = path;
-        img.onload = () => {
-          setLoadedImages(prev => new Set([...prev, index]));
+        
+        const handleLoad = () => {
+          if (!abortController.signal.aborted) {
+            setLoadedImages(prev => new Set([...prev, index]));
+          }
           resolve(index);
         };
-        img.onerror = () => {
+        
+        const handleError = () => {
           console.error(`Failed to load image: ${path}`);
-          resolve(index); // Resolve anyway
+          resolve(index);
         };
         
-        // Set a timeout to resolve anyway after 3 seconds
+        img.addEventListener('load', handleLoad);
+        img.addEventListener('error', handleError);
+        
+        // ✅ MEMORY OPTIMIZATION: Cleanup listeners if aborted
+        abortController.signal.addEventListener('abort', () => {
+          img.removeEventListener('load', handleLoad);
+          img.removeEventListener('error', handleError);
+          resolve(index);
+        });
+        
         setTimeout(() => resolve(index), 3000);
       });
     });
 
-    // When critical images are loaded, start carousel
     Promise.all(preloadPromises).then(() => {
-      setCarouselReady(true);
+      if (!abortController.signal.aborted) {
+        setCarouselReady(true);
+      }
     });
 
-    // Add preload links
-    criticalImages.forEach(path => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = path;
-      document.head.appendChild(link);
-    });
-
-    // Load remaining images in background
+    // Background loading for remaining images
     imagePaths.slice(3).forEach((path, i) => {
+      if (abortController.signal.aborted) return;
+      
       const actualIndex = i + 3;
       const img = new Image();
       img.src = path;
       img.onload = () => {
-        setLoadedImages(prev => new Set([...prev, actualIndex]));
+        if (!abortController.signal.aborted) {
+          setLoadedImages(prev => new Set([...prev, actualIndex]));
+        }
+      };
+      img.onerror = () => {
+        console.error(`Failed to load background image: ${path}`);
       };
     });
 
+    // ✅ CRITICAL: AbortController cleanup prevents memory leaks
     return () => {
-      // Clean up preload links
-      document.querySelectorAll('link[rel="preload"][as="image"]').forEach(el => {
-        const href = el.getAttribute('href');
-        if (href && criticalImages.includes(href)) {
-          document.head.removeChild(el);
-        }
-      });
+      abortController.abort();
     };
   }, [imagePaths]);
 
-  // Function to advance to next slide
+  // ✅ MEMORY OPTIMIZATION: Optimized carousel advance with proper cleanup
   const advanceCarousel = useCallback(() => {
     setActiveIndex(current => {
       const next = (current + 1) % imagePaths.length;
-      // Preload the next image that will be shown
+      // Preload next images
       setLoadedImages(prev => new Set([...prev, next, (next + 1) % imagePaths.length]));
       return next;
     });
   }, [imagePaths.length]);
   
-  // Auto-scroll without pausing on hover
+  // ✅ MEMORY OPTIMIZATION: Only run animation when visible and ready
   useEffect(() => {
-    if (carouselReady) {
-      // Clear any existing interval first
+    if (carouselReady && isCarouselVisible) {
+      // Clear existing interval - IMPORTANT for cleanup
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
       
-      // Create new interval that keeps going regardless of hover
       intervalRef.current = setInterval(advanceCarousel, 4000);
       
-      // Cleanup function
+      // ✅ CRITICAL: Cleanup function prevents memory leaks
       return () => {
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
       };
+    } else {
+      // ✅ MEMORY OPTIMIZATION: Clear interval when not visible
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }
-  }, [carouselReady, advanceCarousel]);
+  }, [carouselReady, isCarouselVisible, advanceCarousel]);
   
-  // Calculate position and styles for each card
-  const getCardStyle = (index: number) => {
+  // Calculate card positions with memoization
+  const getCardStyle = useCallback((index: number) => {
     const position = (index - activeIndex + imagePaths.length) % imagePaths.length;
     
-    // Calculate position based on distance from active card
     let zIndex = 10 - Math.min(Math.abs(position), Math.abs(position - imagePaths.length));
     let xTranslate = 0;
     let scale = 1;
     let opacity = 1;
     let rotate = 0;
     
-    // Apply different styling based on device type
     if (isMobile) {
-      // Mobile-specific adjustments
       if (position === 0) {
-        // Active card - make it appropriately sized for mobile
-        scale = 1.1; // Reduced scale for mobile
+        scale = 1.1;
         zIndex = 20;
       } else {
-        // Cards to the right
         if (position > 0 && position <= Math.floor(imagePaths.length / 2)) {
-          // Reduced spacing for mobile
           xTranslate = 120 + (position - 1) * 60; 
           scale = 0.8 - (position * 0.05);
           opacity = 0.8 - (position * 0.15);
-          rotate = 8 + (position * 4); // Less rotation on mobile
-        } 
-        // Cards to the left
-        else {
+          rotate = 8 + (position * 4);
+        } else {
           const adjustedPosition = position > Math.floor(imagePaths.length / 2) 
             ? position - imagePaths.length 
             : position;
-          // Reduced spacing for mobile
           xTranslate = -120 + (adjustedPosition + 1) * 60; 
           scale = 0.8 - (Math.abs(adjustedPosition) * 0.05);
           opacity = 0.8 - (Math.abs(adjustedPosition) * 0.15);
-          rotate = -8 + (adjustedPosition * 4); // Less rotation on mobile
+          rotate = -8 + (adjustedPosition * 4);
         }
       }
     } else {
-      // Desktop styles (original)
       if (position === 0) {
-        // Active card - make it larger
-        scale = 2; // Original desktop scale
+        scale = 2;
         zIndex = 20;
       } else {
-        // Cards to the right
         if (position > 0 && position <= Math.floor(imagePaths.length / 2)) {
           xTranslate = 240 + (position - 1) * 120; 
           scale = 0.85 - (position * 0.05);
           opacity = 0.9 - (position * 0.15);
           rotate = 12 + (position * 6);
-        } 
-        // Cards to the left
-        else {
+        } else {
           const adjustedPosition = position > Math.floor(imagePaths.length / 2) 
             ? position - imagePaths.length 
             : position;
@@ -182,27 +209,30 @@ const ImageCarousel: React.FC = () => {
       transform: `translateX(${xTranslate}px) scale(${scale}) rotateY(${rotate}deg)`,
       opacity
     };
-  };
+  }, [activeIndex, isMobile, imagePaths.length]);
 
-  // Force load an image if it's not loaded yet
-  const forceLoadImage = (index: number) => {
-    if (!loadedImages.has(index) && imageRefs.current[index]) {
+  // Force load image with proper error handling
+  const forceLoadImage = useCallback((index: number) => {
+    if (!loadedImages.has(index)) {
       const img = new Image();
       img.src = imagePaths[index];
       img.onload = () => {
         setLoadedImages(prev => new Set([...prev, index]));
       };
+      img.onerror = () => {
+        console.error(`Failed to force load image at index ${index}`);
+      };
     }
-  };
+  }, [loadedImages, imagePaths]);
   
   return (
     <div 
+      ref={carouselRef} // ✅ MEMORY OPTIMIZATION: Used for visibility detection
       className={cn(
         "relative w-full overflow-hidden py-10",
-        !carouselReady && "min-h-[28rem]", // Maintain height when loading
-        isMobile && "min-h-[22rem]" // Reduced height on mobile
+        !carouselReady && "min-h-[28rem]",
+        isMobile && "min-h-[22rem]"
       )}
-      ref={carouselRef}
     >
       {/* Loading state */}
       {!carouselReady && (
@@ -213,25 +243,25 @@ const ImageCarousel: React.FC = () => {
       
       <div className={cn(
         "flex justify-center items-center",
-        isMobile ? "h-[20rem]" : "h-[28rem]", // Adjust height based on device
+        isMobile ? "h-[20rem]" : "h-[28rem]",
         "perspective-1000",
-        !carouselReady && "opacity-0" // Hide until images are loaded
+        !carouselReady && "opacity-0"
       )}>
         {imagePaths.map((path, index) => (
           <div
             key={path}
             className={cn(
               "absolute transition-all duration-700 cursor-pointer shadow-xl rounded-md overflow-hidden",
-              isMobile ? "w-60 h-[16rem]" : "w-80 h-[26rem]" // Responsive sizing
+              isMobile ? "w-60 h-[16rem]" : "w-80 h-[26rem]"
             )}
             style={getCardStyle(index)}
             onClick={() => {
               setActiveIndex(index);
-              forceLoadImage(index); // Ensure image is loaded when clicked
+              forceLoadImage(index);
             }}
-            onMouseEnter={() => forceLoadImage(index)} // Preload on hover
+            onMouseEnter={() => forceLoadImage(index)}
           >
-            {/* Low-quality placeholder */}
+            {/* Placeholder */}
             <div 
               className={cn(
                 "absolute inset-0 bg-gray-200",
@@ -239,12 +269,11 @@ const ImageCarousel: React.FC = () => {
               )}
               style={{ 
                 transition: 'opacity 0.3s ease-in-out',
-                backgroundSize: 'cover',
                 backgroundColor: '#f0f0f0'
               }}
             />
             
-            {/* Actual image */}
+            {/* ✅ MEMORY OPTIMIZATION: Lazy loaded images */}
             <img 
               ref={el => { imageRefs.current[index] = el }}
               src={path} 
@@ -258,12 +287,6 @@ const ImageCarousel: React.FC = () => {
               }}
               onError={() => {
                 console.error(`Error loading image at index ${index}`);
-                // Try again once
-                setTimeout(() => {
-                  if (imageRefs.current[index]) {
-                    imageRefs.current[index]!.src = path;
-                  }
-                }, 1000);
               }}
               loading={index < 3 ? "eager" : "lazy"}
             />
@@ -284,7 +307,7 @@ const ImageCarousel: React.FC = () => {
             }`}
             onClick={() => {
               setActiveIndex(index);
-              forceLoadImage(index); // Make sure the image loads when dot is clicked
+              forceLoadImage(index);
             }}
             aria-label={`Go to slide ${index + 1}`}
           />

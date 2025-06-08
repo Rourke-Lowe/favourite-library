@@ -4,7 +4,6 @@ import About from '@/components/sections/About';
 import Navbar from '@/components/layout/Navbar';
 import Artists from '@/components/sections/Artists';
 import Releases from '@/components/sections/Releases';
-import Moodboard from '@/components/sections/Moodboard';
 import Shows from '@/components/sections/Shows';
 import Merch from '@/components/sections/Merch';
 import Contact from '@/components/sections/Contact';
@@ -19,9 +18,7 @@ export default function Home() {
       <Artists />
       <Shows />
       <Releases />
-      <Moodboard />
       <Contact /> 
-
     </main>
   );
 }

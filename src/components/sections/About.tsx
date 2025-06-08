@@ -16,6 +16,13 @@ const About = () => {
           <div className="mt-4 w-32 md:w-64 h-px bg-surface-200 mx-auto"></div>
         </div>
         
+        {/* New paragraph - Added here between header and statements */}
+        <div className="text-center mb-12 md:mb-16">
+          <p className="text-base md:text-lg text-surface-600 max-w-3xl mx-auto">
+            An indie music label based in Tiohtià:ke/Montreal, Canada. Monthly unplugged intimate shows and artist label services.
+          </p>
+        </div>
+        
         {/* Three statements row - Desktop version */}
         <div className="hidden md:block">
           <div className="max-w-5xl mx-auto">

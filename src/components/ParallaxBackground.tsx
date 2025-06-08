@@ -1,10 +1,10 @@
-// src/components/ParallaxBackground.tsx
+// Optimized parallax with proper RAF cleanup and visibility detection
 'use client';
 import { useEffect, useRef, useState } from 'react';
 
 interface ParallaxLayer {
   image: string;
-  speed: number; // between 0.1 (slow) and 0.9 (fast)
+  speed: number;
   zIndex: number;
   opacity: number;
   position?: 'foreground' | 'midground' | 'background';
@@ -31,7 +31,6 @@ const parallaxLayers: ParallaxLayer[] = [
   }
 ];
 
-// Export this to use in layout.tsx
 export function ParallaxPreload() {
   return (
     <>
@@ -50,55 +49,80 @@ export function ParallaxPreload() {
 export default function ParallaxBackground() {
   const layerRefs = useRef<HTMLDivElement[]>([]);
   const rafRef = useRef<number | null>(null);
+  const lastScrollY = useRef(0);
   const [hasMounted, setHasMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  // Use requestAnimationFrame for smooth animations
+  // Visibility detection to pause parallax when off-screen
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+    
+    visibilityObserver.observe(container);
+    
+    return () => {
+      visibilityObserver.disconnect();
+    };
+  }, []);
+  
+  // Optimized parallax with RAF cleanup
   useEffect(() => {
     setHasMounted(true);
     
-    // We don't need to update the transform on every scroll event
-    // Instead, we update it on animation frames
+    if (!isVisible) return; // Don't run parallax when not visible
+    
     const updateParallax = () => {
-      const scrollPosition = window.scrollY;
+      const scrollY = window.scrollY;
+      const scrollDelta = Math.abs(scrollY - lastScrollY.current);
       
-      // Only update if we have layers
-      if (layerRefs.current.length) {
+      // Only update if scroll delta is significant (performance optimization)
+      if (scrollDelta > 1 && layerRefs.current.length) {
         layerRefs.current.forEach((layer, index) => {
           if (layer) {
-            // Apply transform through style property with hardware acceleration
-            const yOffset = scrollPosition * parallaxLayers[index].speed;
+            const yOffset = scrollY * parallaxLayers[index].speed;
+            // Use transform3d for hardware acceleration
             layer.style.transform = `translate3d(0, ${yOffset}px, 0)`;
           }
         });
+        lastScrollY.current = scrollY;
       }
       
-      // Request next frame
-      rafRef.current = requestAnimationFrame(updateParallax);
+      // Continue animation loop only if visible
+      if (isVisible) {
+        rafRef.current = requestAnimationFrame(updateParallax);
+      }
     };
     
-    // Start the animation loop
+    // Start animation loop
     rafRef.current = requestAnimationFrame(updateParallax);
     
-    // Clean up
+    // Cleanup function - CRITICAL for memory management
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
       }
     };
-  }, []);
+  }, [isVisible]); // Re-run when visibility changes
 
-  // Add will-change to optimize browser rendering
+  // Optimize will-change property
   useEffect(() => {
-    // Add will-change to hint the browser about upcoming transformations
-    // but only after component mounts to avoid unnecessary memory usage on initial load
-    if (hasMounted) {
+    if (hasMounted && isVisible) {
       layerRefs.current.forEach((layer) => {
         if (layer) {
           layer.style.willChange = 'transform';
         }
       });
       
-      // Remove will-change after a delay to prevent long-term memory impact
+      // Remove will-change after delay to prevent long-term memory impact
       const timeoutId = setTimeout(() => {
         layerRefs.current.forEach((layer) => {
           if (layer) {
@@ -109,10 +133,13 @@ export default function ParallaxBackground() {
       
       return () => clearTimeout(timeoutId);
     }
-  }, [hasMounted]);
+  }, [hasMounted, isVisible]);
 
   return (
-    <div className="parallax-container fixed inset-0 w-full h-full pointer-events-none overflow-hidden">
+    <div 
+      ref={containerRef}
+      className="parallax-container fixed inset-0 w-full h-full pointer-events-none overflow-hidden"
+    >
       {parallaxLayers.map((layer, index) => (
         <div
           key={index}
@@ -124,7 +151,6 @@ export default function ParallaxBackground() {
             zIndex: layer.zIndex,
             opacity: layer.opacity,
             backgroundImage: `url(${layer.image})`,
-            // Use translate3d for hardware acceleration
             transform: 'translate3d(0, 0, 0)'
           }}
         />

@@ -1,5 +1,4 @@
-// src/hooks/useIntersectionObserver.ts
-import { useState, useEffect, useRef, RefObject } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface UseIntersectionObserverOptions {
   root?: Element | null;
@@ -10,34 +9,34 @@ interface UseIntersectionObserverOptions {
 
 export function useIntersectionObserver<T extends Element>(
   options: UseIntersectionObserverOptions = {}
-): [RefObject<T>, boolean] {
+): [React.RefObject<T>, boolean] {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const ref = useRef<T>(null);
   const { root = null, rootMargin = '0px', threshold = 0, triggerOnce = false } = options;
   
   useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isElementIntersecting = entry.isIntersecting;
         setIsIntersecting(isElementIntersecting);
         
-        // Disconnect after first intersection if triggerOnce is true
-        if (isElementIntersecting && triggerOnce && ref.current) {
-          observer.unobserve(ref.current);
+        // ✅ MEMORY OPTIMIZATION: Disconnect after first intersection
+        if (isElementIntersecting && triggerOnce) {
+          observer.unobserve(element);
         }
       },
       { root, rootMargin, threshold }
     );
     
-    const currentRef = ref.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    observer.observe(element);
     
+    // ✅ CRITICAL: Cleanup to prevent memory leaks
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      observer.unobserve(element);
+      observer.disconnect();
     };
   }, [root, rootMargin, threshold, triggerOnce]);
   

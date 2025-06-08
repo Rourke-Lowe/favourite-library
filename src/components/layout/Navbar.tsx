@@ -31,8 +31,8 @@ const Navbar = () => {
 
   // Set up intersection observers for section detection
   useEffect(() => {
-    // Define array of section IDs in order
-    const sections = ['hero', 'about', 'artists', 'shows', 'releases', 'moodboard'];
+    // Define array of section IDs in order - REMOVED 'moodboard'
+    const sections = ['hero', 'about', 'artists', 'shows', 'releases'];
     
     // Options for the IntersectionObserver
     // Using multiple thresholds for better accuracy
@@ -166,9 +166,9 @@ const Navbar = () => {
             />
           </div>
 
-          {/* Navigation links - always right-aligned */}
+          {/* Navigation links - always right-aligned - REMOVED Moodboard */}
           <ul className="flex space-x-6 md:space-x-10 ml-auto">
-            {['About', 'Artists', 'Shows', 'Releases', 'Moodboard'].map((item) => (
+            {['About', 'Artists', 'Shows', 'Releases'].map((item) => (
               <li key={item}>
                 <a 
                   href={`#${item.toLowerCase()}`}

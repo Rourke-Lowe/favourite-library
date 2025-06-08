@@ -1,9 +1,8 @@
-// src/context/ModalContext.tsx
+// Optimized modal context with proper cleanup and memory management
 'use client';
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useMemo, useRef } from 'react'; // Added useRef
 import { createPortal } from 'react-dom';
 
-// Close icon component
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -11,8 +10,7 @@ const CloseIcon = () => (
   </svg>
 );
 
-// Modal backdrop opacity setting - subtle
-const BACKDROP_OPACITY = 0.4; 
+const BACKDROP_OPACITY = 0.4;
 
 type ModalContextType = {
   openModal: (title: string, content: React.ReactNode) => void;
@@ -33,12 +31,14 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
   
   const [mounted, setMounted] = useState(false);
+  const previousActiveElement = useRef<Element | null>(null);
   
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
   
+  // Optimized event handlers with proper cleanup
   useEffect(() => {
     if (!mounted) return;
     
@@ -49,41 +49,59 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     if (modalState.isOpen) {
+      // Store current active element for restoration
+      previousActiveElement.current = document.activeElement;
+      
+      // Lock body scroll
+      const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+      
+      // Add escape listener
       document.addEventListener('keydown', handleEscapeKey);
-    } else {
-      document.body.style.overflow = 'auto';
+      
+      // Cleanup function
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.removeEventListener('keydown', handleEscapeKey);
+        
+        // Restore focus
+        if (previousActiveElement.current instanceof HTMLElement) {
+          previousActiveElement.current.focus();
+        }
+      };
     }
-    
-    return () => {
-      document.body.style.overflow = 'auto';
-      document.removeEventListener('keydown', handleEscapeKey);
-    };
   }, [modalState.isOpen, mounted]);
   
-  const openModal = (title: string, content: React.ReactNode) => {
+  // Memoized handlers to prevent unnecessary re-renders
+  const openModal = useCallback((title: string, content: React.ReactNode) => {
     setModalState({
       isOpen: true,
       title,
       content,
     });
-  };
+  }, []);
   
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setModalState(prev => ({
       ...prev,
       isOpen: false,
     }));
-  };
+  }, []);
   
-  const handleBackdropClick = (e: React.MouseEvent) => {
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       closeModal();
     }
-  };
+  }, [closeModal]);
+  
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    openModal,
+    closeModal
+  }), [openModal, closeModal]);
   
   return (
-    <ModalContext.Provider value={{ openModal, closeModal }}>
+    <ModalContext.Provider value={contextValue}>
       {children}
       
       {mounted && modalState.isOpen ? 
@@ -103,6 +121,9 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               zIndex: 9999,
             }}
             onClick={handleBackdropClick}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
           >
             <div 
               style={{
@@ -126,13 +147,17 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 padding: '20px',
                 backgroundColor: 'white',
                 zIndex: 1,
+                borderBottom: '1px solid #e5e7eb'
               }}>
-                <h2 style={{ 
-                  fontSize: '20px', 
-                  fontWeight: '500',
-                  margin: 0,
-                  color: '#333'
-                }}>
+                <h2 
+                  id="modal-title"
+                  style={{ 
+                    fontSize: '20px', 
+                    fontWeight: '500',
+                    margin: 0,
+                    color: '#333'
+                  }}
+                >
                   {modalState.title}
                 </h2>
                 <button 
@@ -153,6 +178,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                   onMouseOver={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
                   onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
                   aria-label="Close modal"
+                  autoFocus
                 >
                   <CloseIcon />
                 </button>
@@ -170,7 +196,6 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-// Custom hook to use the modal context
 export const useModal = () => {
   const context = useContext(ModalContext);
   
