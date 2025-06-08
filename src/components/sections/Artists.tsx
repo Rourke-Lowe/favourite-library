@@ -1,60 +1,12 @@
-// src/components/sections/Artists.tsx
 'use client';
-import { useState } from 'react';
 import { artists, Artist } from '@/data/artists';
 import SectionHeader from '@/components/ui/SectionHeader';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ExternalLink } from 'lucide-react';
 import { useModal } from '@/context/ModalContext';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { cn } from '@/lib/utils';
-
-// LazyImage component - THIS is where the real memory optimization happens
-const LazyImage = ({ src, alt, className, imgClassName, onClick }) => {
-  const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
-    triggerOnce: true, // ✅ Disconnect after first view - MEMORY OPTIMIZATION
-    threshold: 0.1,
-    rootMargin: '200px', // ✅ Load before entering viewport - PERFORMANCE OPTIMIZATION
-  });
-  
-  const [isLoaded, setIsLoaded] = useState(false);
-  
-  return (
-    <div 
-      ref={ref} 
-      className={cn("relative overflow-hidden", className)}
-      onClick={onClick}
-    >
-      {/* Placeholder while not in view or loading */}
-      {(!isLoaded || !isInView) && (
-        <div className="absolute inset-0 bg-surface-200 animate-pulse"></div>
-      )}
-      
-      {/* ✅ Only render image when in viewport - MAJOR MEMORY SAVING */}
-      {isInView && (
-        <img 
-          src={src} 
-          alt={alt} 
-          className={cn(
-            "transition-opacity duration-500",
-            isLoaded ? "opacity-100" : "opacity-0",
-            imgClassName
-          )}
-          onLoad={() => setIsLoaded(true)}
-          onError={(e) => {
-            console.error('Failed to load image:', src);
-            setIsLoaded(true); // Prevent infinite loading state
-          }}
-        />
-      )}
-    </div>
-  );
-};
 
 const Artists = () => {
   const { openModal } = useModal();
-  
-  // ❌ REMOVED: Unused section observer that was consuming memory for no benefit
-  // const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({...});
   
   const getSocialLabel = (linkType: string) => {
     switch(linkType) {
@@ -162,7 +114,7 @@ const Artists = () => {
   };
   
   return (
-    <section id="artists" className="py-24"> {/* ❌ REMOVED: unused ref={sectionRef} */}
+    <section id="artists" className="py-24">
       <div className="container mx-auto px-6">
         <SectionHeader 
           title="Artists" 
@@ -181,8 +133,7 @@ const Artists = () => {
                 onClick={() => handleArtistClick(artist)}
               >
                 <div className="aspect-portrait overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg relative">
-                  {/* ✅ THIS LazyImage provides the real memory optimization */}
-                  <LazyImage 
+                  <OptimizedImage 
                     src={artist.image}
                     alt={artist.name}
                     imgClassName={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isPastArtist ? 'grayscale' : ''}`}

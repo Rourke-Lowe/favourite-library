@@ -7,7 +7,6 @@ import Releases from '@/components/sections/Releases';
 import Shows from '@/components/sections/Shows';
 import Merch from '@/components/sections/Merch';
 import Contact from '@/components/sections/Contact';
-import AudioPlayer from '@/components/player/AudioPlayer';
 
 export default function Home() {
   return (

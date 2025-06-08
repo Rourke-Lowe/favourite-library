@@ -1,35 +1,30 @@
 {
   "name": "favorite-library",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.18",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "framer-motion": "^12.5.0",
-    "lucide-react": "^0.483.0",
-    "next": "15.1.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "next": "14.0.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0",
+    "lucide-react": "^0.263.1"
   },
   "devDependencies": {
-    "@types/node": "^20.8.10",
-    "@types/react": "^18.2.36",
-    "@types/react-dom": "^18.2.14",
-    "autoprefixer": "^10.4.16",
-    "critters": "^0.0.23",
-    "eslint": "^8.53.0",
-    "eslint-config-next": "15.1.7",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.2.2"
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5",
+    "@next/bundle-analyzer": "^14.0.0"
   }
 }
