@@ -1,7 +1,6 @@
 // src/app/layout.tsx
 import './globals.css';
 import ParallaxBackground from '@/components/ParallaxBackground';
-import { AudioProvider } from '@/context/AudioContext';
 import { ModalProvider } from '@/context/ModalContext';
 
 
@@ -20,11 +19,9 @@ export default function RootLayout({
       <body className="antialiased">
         <div className="main-content min-h-screen">
           <ParallaxBackground />
-          <AudioProvider>
             <ModalProvider>
               {children}
             </ModalProvider>
-          </AudioProvider>
         </div>
       </body>
     </html>

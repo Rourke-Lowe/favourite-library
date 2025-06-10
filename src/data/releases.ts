@@ -1,21 +1,7 @@
-export interface Release {
-  id: string;
-  title: string;
-  artists: string[];
-  releaseDate: string;
-  releaseType: string;
-  genres: string[];
-  tracks: string[];
-  artworkPath: string; // Properly formatted filepath
-  spotifyUrl: string;
-  appleMusicUrl: string;
-  description: string;
-  audioClipTime: string | number;
-  releaseStage: string;
-}
-
+import { Release } from '@/types/releases';
 
 export const releases: Release[] = [
+
   {
     id: 'nightmare',
     title: 'Nightmare',

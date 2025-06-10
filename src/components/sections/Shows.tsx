@@ -12,11 +12,20 @@ import ShowDetail from '@/components/shows/ShowDetail';
 import FeaturedShow from '@/components/shows/FeaturedShow';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
-import { Show } from '@/types/show';
+import { Show, ShowDataFormat } from '@/types/show';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 // LazyImage component for optimized image loading
-const LazyImage = ({ src, alt, className, imgClassName, onClick }) => {
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  imgClassName?: string;
+  onClick?: () => void;
+}
+
+const LazyImage = ({ src, alt, className, imgClassName, onClick }: LazyImageProps) => {
+
   const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
     triggerOnce: true,
     threshold: 0.1,
@@ -146,7 +155,7 @@ const Shows = () => {
       });
   }, [timeFilter, seriesFilter, featuredShow.id]);
 
-  const handleShowClick = (show) => {
+  const handleShowClick = (show: ShowDataFormat) => {
     // For all devices, use the global modal
     openModal(show.title, (
       <ShowDetail
@@ -158,7 +167,12 @@ const Shows = () => {
   };
   
   // Custom ShowCard optimized for lazy loading
-  const OptimizedShowCard = ({ show, isUpcoming, formatDate, onClick }) => (
+  const OptimizedShowCard = ({ show, isUpcoming, formatDate, onClick }: {
+  show: ShowDataFormat;
+  isUpcoming: boolean;
+  formatDate: (date: string) => string;
+  onClick: () => void;
+}) => (
     <div className="cursor-pointer" onClick={onClick}>
       <div className={cn(
         "aspect-[4/5] overflow-hidden rounded-lg",

@@ -9,7 +9,7 @@ interface LazySectionProps {
   rootMargin?: string;
   threshold?: number;
   id?: string;
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: 'section' | 'div' | 'article' | 'aside' | 'main';
 }
 
 const LazySection: React.FC<LazySectionProps> = ({
@@ -18,7 +18,7 @@ const LazySection: React.FC<LazySectionProps> = ({
   rootMargin = '200px',
   threshold = 0.1,
   id,
-  tag: Tag = 'section',
+  tag = 'section',
 }) => {
   const [ref, isVisible] = useIntersectionObserver<HTMLElement>({
     rootMargin,
@@ -26,15 +26,20 @@ const LazySection: React.FC<LazySectionProps> = ({
     triggerOnce: true,
   });
 
-  return (
-    <Tag 
-      ref={ref} 
-      className={className} 
-      id={id}
-    >
-      {typeof children === 'function' ? children(isVisible) : (isVisible ? children : null)}
-    </Tag>
-  );
+  const content = typeof children === 'function' ? children(isVisible) : (isVisible ? children : null);
+
+  switch (tag) {
+    case 'div':
+      return <div ref={ref as any} className={className} id={id}>{content}</div>;
+    case 'article':
+      return <article ref={ref as any} className={className} id={id}>{content}</article>;
+    case 'aside':
+      return <aside ref={ref as any} className={className} id={id}>{content}</aside>;
+    case 'main':
+      return <main ref={ref as any} className={className} id={id}>{content}</main>;
+    default:
+      return <section ref={ref as any} className={className} id={id}>{content}</section>;
+  }
 };
 
 export default LazySection;

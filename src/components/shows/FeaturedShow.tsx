@@ -76,7 +76,7 @@ const FeaturedShow = ({
             <div className="mb-6">
               <h4 className="text-sm font-medium text-surface-600 mb-3">Lineup</h4>
               <div className="space-y-2">
-                {show.lineup.map((artist, index) => (
+                {show.lineup.map((artist: string, index: number) => (
                   <div 
                     key={index} 
                     className="flex items-center gap-3 px-4 py-2 bg-surface-50 rounded-md"

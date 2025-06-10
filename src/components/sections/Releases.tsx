@@ -1,7 +1,6 @@
 // src/components/sections/Releases.tsx
 'use client';
 import { useState, useMemo, useEffect } from 'react';
-import { useAudio } from '@/context/AudioContext';
 import { releases } from '@/data/releases';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,15 @@ import { ReleaseDataFormat } from '@/types/releases';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 // LazyImage component for optimized image loading
-const LazyImage = ({ src, alt, className, imgClassName, onClick }) => {
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  imgClassName?: string;
+  onClick?: () => void;
+}
+
+const LazyImage = ({ src, alt, className, imgClassName, onClick }: LazyImageProps) => {
   const [ref, isInView] = useIntersectionObserver<HTMLDivElement>({
     triggerOnce: true,
     threshold: 0.1,
@@ -71,7 +78,6 @@ const getArtworkPath = (release: ReleaseDataFormat) => {
 
 const Releases = () => {
   const { openModal } = useModal();
-  const { currentTrack } = useAudio(); // Keep reference to useAudio to avoid breaking context
   const [artistFilter, setArtistFilter] = useState('All Artists');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [showAllReleases, setShowAllReleases] = useState(false);
@@ -119,7 +125,7 @@ const Releases = () => {
     ? filteredReleases 
     : filteredReleases.slice(0, 3);
   
-  const handleReleaseClick = (release) => {
+  const handleReleaseClick = (release: ReleaseDataFormat) => {
     openModal(release.title, (
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-6">
@@ -399,8 +405,7 @@ const Releases = () => {
                     <LazyImage 
                       src={getArtworkPath(release)}
                       alt={release.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy" 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                     />
                   </div>
                   
