@@ -1,17 +1,14 @@
-// tailwind.config.ts
 import type { Config } from "tailwindcss";
 
-export default {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  
   theme: {
     extend: {
-      // Keep your existing color system based on CSS variables
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -53,7 +50,6 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))'
         },
-        // Add surface colors for our design system
         surface: {
           50: 'hsl(var(--surface-50))',
           100: 'hsl(var(--surface-100))',
@@ -67,19 +63,16 @@ export default {
           900: 'hsl(var(--surface-900))',
         }
       },
-      // Keep your existing border radius settings
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
       },
-      // Add font family settings
       fontFamily: {
         sans: ['Inter var', 'Inter', 'sans-serif'],
-        display: ['Clash Display', 'sans-serif'], // For headings
-        mono: ['JetBrains Mono', 'monospace'], // For release dates, technical info
+        display: ['Clash Display', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
-      // Add custom font size scale
       fontSize: {
         'display-large': ['3.5rem', { lineHeight: '1', letterSpacing: '-0.02em', fontWeight: '500' }],
         'display': ['2.5rem', { lineHeight: '1.1', letterSpacing: '-0.015em', fontWeight: '500' }],
@@ -89,7 +82,6 @@ export default {
         'caption': ['0.875rem', { lineHeight: '1.4', letterSpacing: '0.01em', fontWeight: '400' }],
         'small': ['0.75rem', { lineHeight: '1.3', letterSpacing: '0.02em', fontWeight: '400' }],
       },
-      // Add animation keyframes
       keyframes: {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
@@ -107,4 +99,6 @@ export default {
     }
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+};
+
+export default config;

@@ -5,7 +5,6 @@ import Navbar from '@/components/layout/Navbar';
 import Artists from '@/components/sections/Artists';
 import Releases from '@/components/sections/Releases';
 import Shows from '@/components/sections/Shows';
-import Merch from '@/components/sections/Merch';
 import Contact from '@/components/sections/Contact';
 
 export default function Home() {
