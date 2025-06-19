@@ -25,7 +25,7 @@ export const artists = [
   {
     id: "anna-justen",
     name: "Anna Justen",
-    bio: "Anna Justen is a Montreal-based poet and singer-songwriter known for her introspective lyrics and genre-blending sound that moves between folk, indie, and electronic elements. Her music explores themes of isolation, family relationships, and finding connection in a disconnected world.\n\nSince joining Favourite Library in spring 2023, Anna has released three singles leading up to her debut album \"Michous Dream.\" Her careful songwriting combines delicate acoustic arrangements with experimental production elements reminiscent of Saya Gray, James Blake, and Bon Iv",
+    bio: "Anna Justen is a Montreal-based poet and singer-songwriter known for her introspective lyrics and genre-blending sound that moves between folk, indie, and electronic elements. Her music explores themes of isolation, family relationships, and finding connection in a disconnected world.",
     image: "/images/artists/anna-justen.jpg",
     startDate: "2024-08-30",
     endDate: "2025-08-30",
@@ -41,9 +41,21 @@ export const artists = [
     },
     releases: [
       {
+        id: "michou\'s-dream",
+        title: "MiCHOU\'s DREAM",
+        coverArt: "/images/releases/MiCHOU\'s Dream Anna Justen Artwork.png",
+        releaseDate: "2025-05-08"
+      },
+      {
+        id: "are-you-ready?",
+        title: "Are You Ready?",
+        coverArt: "/images/releases/Are You Ready Anna Justen Artwork.png",
+        releaseDate: "2025-04-25"
+      },
+      {
         id: "nightmare",
-        title: "Nightmare",
-        coverArt: "/images/releases/nightmare by Anna Justen Artwork.png",
+        title: "nightmare",
+        coverArt: "/images/releases/nightmare Anna Justen Artwork.png",
         releaseDate: "2025-03-28"
       },
       {
@@ -75,7 +87,7 @@ export const artists = [
   {
     id: "edwin-raphael",
     name: "Edwin Raphael",
-    bio: "How do you anchor yourself when occupying multiple geographic identities at once?  \nFor Edwin Raphael, the Dubai-raised, Montreal-based songwriter, it requires an intentional and intensive form of world-building. By developing an unmistakable style of folk that merges Eastern scales with the Western pop canon, Raphael reimagines his music as an exploratory tool that allows him to construct an interior and sacred home to retreat into.",
+    bio: "How do you anchor yourself when occupying multiple geographic identities at once?",
     image: "/images/artists/edwin-raphael.png",
     startDate: "2019-03-08",
     endDate: "2026-03-08",
@@ -95,7 +107,7 @@ export const artists = [
         id: "wytoml-deluxe",
         title: "WYTOML Deluxe",
         coverArt: "/images/releases/Will You Think Of Me Later Deluxe Edwin Rapahel Artwork.jpg",
-        releaseDate: "2024-05-10"
+        releaseDate: "2024-05-09"
       },
       {
         id: "warm-terracotta",
@@ -104,8 +116,8 @@ export const artists = [
         releaseDate: "2023-02-17"
       },
       {
-        id: "will-you-think-of-me-later?",
-        title: "Will You Think Of Me Later?",
+        id: "will-you-think-of-me-later",
+        title: "Will You Think Of Me Later",
         coverArt: "/images/releases/Will You Think Of Me Later Edwin Rapahel Artwork.jpg",
         releaseDate: "2019-03-08"
       },
@@ -120,12 +132,13 @@ export const artists = [
   {
     id: "nicholas-cangiano",
     name: "Nicholas Cangiano",
-    bio: "Nicholas Cangiano is a Montreal based multi instrumentalist who’s soulful and eclectic sound quickly pulls you into his colourful world and creates a window into his life as a self made musician. Where anything goes, where the peculiar is encouraged, and where you’re enticed to let down your walls and come as you are. Cangiano uses his savvy for several instruments; most notably guitar, bass, and keys to blend influences of classic funk and soul with modern pop and rock together into fresh, infectious productions that will have you coming back for more.",
+    bio: "Nicholas Cangiano is a Montreal based multi instrumentalist who\'s soulful and eclectic sound quickly pulls you into his colourful world and creates a window into his life as a self made musician. Where anything goes, where the peculiar is encouraged, and where you\'re enticed to let down your walls and come as you are.",
     image: "/images/artists/nicholas-cangiano.png",
     startDate: "2022-06-01",
     endDate: "2024-06-01",
     status: "Past",
     genre: "Pop / Alternative / Rock",
+    location: "Montreal, QC",
     links: {
       instagram: "https://www.instagram.com/nicholascangiano/",
       spotify: "https://open.spotify.com/artist/7dwVih1QdpLWuZ0OeslLcg?si=FAEDRGF-Re-GspB_yR6JaQ",
@@ -190,5 +203,4 @@ export const artists = [
       },
     ],
   },
-
 ];
