@@ -2,62 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
-
     --background: 0 0% 100%;
-
     --foreground: 0 0% 3.9%;
-
     --card: 0 0% 100%;
-
     --card-foreground: 0 0% 3.9%;
-
     --popover: 0 0% 100%;
-
     --popover-foreground: 0 0% 3.9%;
-
-    --primary: 0 0% 9%;
-
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 0 0% 96.1%;
-
-    --secondary-foreground: 0 0% 9%;
-
+    --primary: 24 95% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 100% 50%;
+    --secondary-foreground: 210 40% 98%;
     --muted: 0 0% 96.1%;
-
     --muted-foreground: 0 0% 45.1%;
-
     --accent: 0 0% 96.1%;
-
     --accent-foreground: 0 0% 9%;
-
     --destructive: 0 84.2% 60.2%;
-
     --destructive-foreground: 0 0% 98%;
-
     --border: 0 0% 89.8%;
-
     --input: 0 0% 89.8%;
-
     --ring: 0 0% 3.9%;
-
-    --chart-1: 12 76% 61%;
-
-    --chart-2: 173 58% 39%;
-
-    --chart-3: 197 37% 24%;
-
-    --chart-4: 43 74% 66%;
-
-    --chart-5: 27 87% 67%;
-
     --radius: 0.5rem;
     
-    /* Add these new variables for our enhanced design system */
+    /* Surface colors */
     --surface-50: 210 40% 98%;
     --surface-100: 210 40% 96%;
     --surface-200: 214 32% 91%;
@@ -68,182 +36,33 @@
     --surface-700: 215 25% 27%;
     --surface-800: 217 33% 17%;
     --surface-900: 222 47% 11%;
-
-    /* Adjust primary to be a distinctive orange (or your preferred brand color) */
-    --primary: 24 95% 53%;
-    --primary-foreground: 210 40% 98%;
-
-    /* Secondary color - complementary to primary */
-    --secondary: 210 100% 50%;
-    --secondary-foreground: 210 40% 98%
-  }
-  .dark {
-
-    --background: 0 0% 3.9%;
-
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 3.9%;
-
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 3.9%;
-
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 14.9%;
-
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 14.9%;
-
-    --muted-foreground: 0 0% 63.9%;
-
-    --accent: 0 0% 14.9%;
-
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 14.9%;
-
-    --input: 0 0% 14.9%;
-
-    --ring: 0 0% 83.1%;
-
-    --chart-1: 220 70% 50%;
-
-    --chart-2: 160 60% 45%;
-
-    --chart-3: 30 80% 55%;
-
-    --chart-4: 280 65% 60%;
-
-    --chart-5: 340 75% 55%;
-      /* Dark mode variables here */
-    --surface-50: 222 47% 11%;
-    --surface-100: 217 33% 17%;
-    --surface-200: 215 25% 27%;
-    --surface-300: 215 19% 35%;
-    --surface-400: 215 16% 47%;
-    --surface-500: 215 20% 65%;
-    --surface-600: 213 27% 84%;
-    --surface-700: 214 32% 91%;
-    --surface-800: 210 40% 96%;
-    --surface-900: 210 40% 98%
   }
 }
 
-/* Parallax container styles */
-.parallax-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none; /* Allow clicking through to content */
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.parallax-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 120%; /* Extra height to allow for movement */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  will-change: transform; /* Optimization for animations */
+html {
+  scroll-behavior: smooth;
 }
 
-.parallax-layer {
-  /* Ensure proper rendering of transparent PNGs */
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  
-  /* Force hardware acceleration to fix rendering issues */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  
-  /* Additional fixes for Safari */
-  -webkit-backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  backface-visibility: hidden;
-  perspective: 1000;
-  
-  /* Clear any potential borders */
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Mobile-specific fixes */
-@media (max-width: 768px) {
-  .parallax-layer {
-    /* Add a slight scale to ensure no white borders appear */
-    transform: scale(1.01);
-    -webkit-transform: scale(1.01);
-  }
-}
-
-.background {
-  background-position: center bottom;
-}
-
-.midground {
-  background-position: center center;
-}
-
-.foreground {
-  background-position: center top;
-}
-
-/* Main content needs to be positioned relatively */
-.main-content {
-  position: relative;
-  z-index: 1;
-  background: transparent; /* No background color */
-}
-
-/* Make section backgrounds transparent */
-section {
-  background-color: transparent;
-  position: relative;
-  z-index: 2;
-}
-
-/* Add some subtle text shadow to improve readability against the parallax background */
-h1, h2, h3, p {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-/* Add these custom utility classes to your globals.css file */
-
-/* 3D perspective utilities */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-/* Add this if the above class doesn't work properly */
-@layer utilities {
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-}
-
+/* Parallax styles */
 .parallax-container {
   position: fixed;
   top: 0;
@@ -252,7 +71,7 @@ h1, h2, h3, p {
   height: 100%;
   overflow: hidden;
   z-index: -1;
-  pointer-events: none; /* Let interactions pass through */
+  pointer-events: none;
 }
 
 .parallax-layer {
@@ -260,49 +79,35 @@ h1, h2, h3, p {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 120%;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   will-change: transform;
 }
 
-/* Add to globals.css */
-
-/* Image placeholder styling */
-.img-placeholder {
-  background-color: #f3f4f6;
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-  background-size: 40px 100%;
-  background-repeat: no-repeat;
-  background-position: left -40px top 0;
-  animation: shimmer 1s infinite;
+/* Main content */
+.main-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
 }
 
-@keyframes shimmer {
-  to {
-    background-position: right -40px top 0;
-  }
+/* Section styles */
+section {
+  position: relative;
+  z-index: 2;
 }
 
-/* Fade-in animation for images */
-.fade-in {
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+/* Utility classes */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-.fade-in.loaded {
-  opacity: 1;
-}
-
-
-/* Optional: Add a smooth animation when cards enter the viewport */
+/* Animation classes */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -318,40 +123,21 @@ h1, h2, h3, p {
   animation: fadeIn 0.8s ease-out forwards;
 }
 
-.dark {
-/* Dark mode variables here */
---surface-50: 222 47% 11%;
---surface-100: 217 33% 17%;
---surface-200: 215 25% 27%;
---surface-300: 215 19% 35%;
---surface-400: 215 16% 47%;
---surface-500: 215 20% 65%;
---surface-600: 213 27% 84%;
---surface-700: 214 32% 91%;
---surface-800: 210 40% 96%;
---surface-900: 210 40% 98%;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Import the fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
-
-/* Add a base style for smooth scrolling */
-html {
-scroll-behavior: smooth;
+::-webkit-scrollbar-track {
+  background: hsl(var(--surface-100));
 }
 
-body {
-@apply bg-background text-foreground;
-font-feature-settings: "rlig" 1, "calt" 1;
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--surface-400));
+  border-radius: 4px;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--surface-500));
 }
