@@ -35,7 +35,7 @@ const Contact = () => {
             </div>
             <h3 className="font-medium mb-2">Stay Updated</h3>
             <p className="text-sm text-surface-600 mb-4">
-              Get the latest on releases, shows, and label news.
+              Get the latest on releases, shows, and other things we care about.
             </p>
             <Button
               variant="outline"
