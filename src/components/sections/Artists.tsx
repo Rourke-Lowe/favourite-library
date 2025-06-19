@@ -1,3 +1,4 @@
+// src/components/sections/Artists.tsx
 'use client';
 import { artists, Artist } from '@/data/artists';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -132,7 +133,8 @@ const Artists = () => {
                 className={`group cursor-pointer ${isPastArtist ? 'opacity-70' : ''}`} 
                 onClick={() => handleArtistClick(artist)}
               >
-                <div className="aspect-portrait overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg relative">
+                {/* Fixed: Using aspect-[3/4] for consistent portrait dimensions */}
+                <div className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg relative">
                   <OptimizedImage 
                     src={artist.image}
                     alt={artist.name}

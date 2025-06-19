@@ -31,8 +31,8 @@ const Navbar = () => {
 
   // Set up intersection observers for section detection
   useEffect(() => {
-    // Define array of section IDs in order - REMOVED 'moodboard'
-    const sections = ['hero', 'about', 'artists', 'shows', 'releases'];
+    // Define array of section IDs in order - Added 'contact'
+    const sections = ['hero', 'about', 'artists', 'shows', 'releases', 'contact'];
     
     // Options for the IntersectionObserver
     // Using multiple thresholds for better accuracy
@@ -142,12 +142,13 @@ const Navbar = () => {
       
       <nav 
         ref={navbarRef}
-        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full transition-all duration-300 min-h-[70px] ${
           isSticky ? 'backdrop-blur-md bg-background/80 shadow-sm' : ''
         }`}
       >
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo that only appears when sticky */}
+        {/* Increased padding significantly and added min-height to nav items */}
+        <div className="container mx-auto px-6 py-6 flex items-center justify-between min-h-[70px]">
+          {/* Logo that only appears when sticky - made slightly larger */}
           <div 
             className={`transition-all duration-500 transform ${
               isSticky 
@@ -160,20 +161,20 @@ const Navbar = () => {
             <Image 
               src="/logo-small.png" 
               alt="Favorite Library - Back to top" 
-              width={40}
-              height={40}
-              className="h-8 w-auto hover:opacity-80 transition-opacity"
+              width={44}
+              height={44}
+              className="h-10 w-auto hover:opacity-80 transition-opacity"
             />
           </div>
 
-          {/* Navigation links - always right-aligned - REMOVED Moodboard */}
-          <ul className="flex space-x-6 md:space-x-10 ml-auto">
-            {['About', 'Artists', 'Shows', 'Releases'].map((item) => (
+          {/* Navigation links - always right-aligned - Added Contact and increased text size */}
+          <ul className="flex space-x-6 md:space-x-12 ml-auto">
+            {['About', 'Artists', 'Shows', 'Releases', 'Contact'].map((item) => (
               <li key={item}>
                 <a 
                   href={`#${item.toLowerCase()}`}
                   onClick={(e) => handleNavClick(e, item.toLowerCase())}
-                  className={`transition-all duration-200 font-mono text-xs uppercase tracking-wider hover:text-primary relative ${
+                  className={`transition-all duration-200 font-mono text-sm uppercase tracking-wider hover:text-primary relative py-2 ${
                     activeSection === item.toLowerCase() 
                       ? 'text-primary' 
                       : 'text-foreground'

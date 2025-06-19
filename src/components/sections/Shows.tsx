@@ -1,7 +1,7 @@
 // src/components/sections/Shows.tsx
 'use client';
 import { useState, useMemo } from 'react';
-import { ExternalLink, ChevronDown, Grid, List, FileText } from 'lucide-react';
+import { ExternalLink, ChevronDown, Grid, List } from 'lucide-react';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -13,9 +13,6 @@ import FeaturedShow from '@/components/shows/FeaturedShow';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
 import { Show, ShowDataFormat } from '@/types/show';
-
-// Google Form URL - Update this with your actual form URL
-const GOOGLE_FORM_URL = 'https://forms.google.com/your-form-url-here';
 
 // Type for time filtering
 type TimeFilterType = 'all' | 'upcoming' | 'past';
@@ -107,31 +104,28 @@ const Shows = () => {
       />
     ));
   };
-
-  // Handle Google Form button click
-  const handleGoogleFormClick = () => {
-    window.open(GOOGLE_FORM_URL, '_blank', 'noopener,noreferrer');
-  };
   
   return (
     <section id="shows" className="py-24 relative">
       <div className="container mx-auto px-6">
         <SectionHeader 
           title="Shows" 
-          subtitle="We run shows every couple of months in beautiful unique locations around Montreal."
         />
         
-        {/* Google Form Button - Simple and prominent */}
-        <div className="flex justify-center mb-10">
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={handleGoogleFormClick}
-            leftIcon={<FileText size={20} />}
-            className="shadow-lg hover:shadow-xl transition-shadow"
-          >
-            Submit Your Show Proposal
-          </Button>
+        {/* Custom subtitle with hyperlink - left aligned */}
+        <div className="mb-12 -mt-8">
+          <p className="text-surface-600 max-w-3xl">
+            We run shows every couple of months in beautiful unique locations around Montreal. 
+            </p>
+            <p className="text-surface-600 max-w-3xl">Want to play a show? <a 
+              href="https://forms.gle/PB2n3TBa6xGPCgks8" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+            >
+              Click here!
+            </a>
+          </p>
         </div>
         
         {/* Featured Show */}
