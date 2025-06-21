@@ -2,6 +2,7 @@
 import './globals.css';
 import ParallaxBackground from '@/components/ParallaxBackground';
 import { ModalProvider } from '@/context/ModalContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 
 export const metadata = {
@@ -19,9 +20,11 @@ export default function RootLayout({
       <body className="antialiased">
         <div className="main-content min-h-screen">
           <ParallaxBackground />
-            <ModalProvider>
-              {children}
-            </ModalProvider>
+            <LanguageProvider>
+              <ModalProvider>
+                {children}
+              </ModalProvider>
+            </LanguageProvider>
         </div>
       </body>
     </html>

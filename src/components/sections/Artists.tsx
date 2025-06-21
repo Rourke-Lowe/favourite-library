@@ -1,12 +1,16 @@
 // src/components/sections/Artists.tsx
 'use client';
-import { artists, Artist } from '@/data/artists';
+import { useLocalizedData } from '@/hooks/useLocalizedData';
+import { useLanguage } from '@/context/LanguageContext';
+import type { Artist } from '@/types/artist';
 import SectionHeader from '@/components/ui/SectionHeader';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ExternalLink } from 'lucide-react';
 import { useModal } from '@/context/ModalContext';
 
 const Artists = () => {
+  const { t } = useLanguage();
+  const { data: artists, loading, error } = useLocalizedData<Artist[]>('artists');
   const { openModal } = useModal();
   
   const getSocialLabel = (linkType: string) => {
@@ -114,11 +118,31 @@ const Artists = () => {
     ));
   };
   
+  if (loading) {
+    return (
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <p>Loading artists...</p>
+        </div>
+      </section>
+    );
+  }
+  
+  if (error || !artists) {
+    return (
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <p>Error loading artists</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="artists" className="py-24">
       <div className="container mx-auto px-6">
         <SectionHeader 
-          title="Artists" 
+          title={t('nav.artists')} 
           subtitle="We work with amazing artists building beautiful words."
         />
         

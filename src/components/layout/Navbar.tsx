@@ -2,6 +2,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 const Navbar = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -168,8 +169,9 @@ const Navbar = () => {
           </div>
 
           {/* Navigation links - always right-aligned - Added Contact and increased text size */}
-          <ul className="flex space-x-6 md:space-x-12 ml-auto">
-            {['About', 'Artists', 'Shows', 'Releases', 'Contact'].map((item) => (
+          <div className="flex items-center space-x-6 ml-auto">
+            <ul className="flex space-x-6 md:space-x-12">
+              {['About', 'Artists', 'Shows', 'Releases', 'Contact'].map((item) => (
               <li key={item}>
                 <a 
                   href={`#${item.toLowerCase()}`}
@@ -191,7 +193,9 @@ const Navbar = () => {
                 </a>
               </li>
             ))}
-          </ul>
+            </ul>
+            <LanguageSwitcher />
+          </div>
         </div>
       </nav>
     </>

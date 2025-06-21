@@ -1,0 +1,238 @@
+{
+  "generated": "2025-06-21T11:01:39.728431",
+  "shows": [
+    {
+      "id": "common-ground-01",
+      "title": "Common Ground 01",
+      "date": "July 18, 2025",
+      "time": "6:30 PM",
+      "venue": "Azalea",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "Favourite Library *Common Ground 01! We're very excited to introduce you to the Common Ground series. A new series that will be taking place outdoors, and is all about connecting with ourselves and others. Before and after the event a trained meditation & breath-work facilitator will lead a 5 minute optional grounding meditation. We'll be all loose and comfy, and then we'll be able to enjoy three artistic projects share their work in a very comfortable secluded back patio.",
+      "image": "/images/shows/Coming Soon Poster Main.png",
+      "series": "Common Ground",
+      "lineup": [
+        "TBD"
+      ],
+      "ticketLink": "https://buytickets.at/favouritelibrary1/1749274/share/7d9612a845e70139d5deb421088ba90b"
+    },
+    {
+      "id": "and-friends-04",
+      "title": "And Friends 04",
+      "date": "May 10, 2025",
+      "time": "7:30 PM",
+      "venue": "Avenue Public",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "Our 4th edition of Favourite Library And Friends, and our first fourth edition of any series! Hosted in the beautiful Avenue Public, a photo studio provided to us by the amazing Sophia (or you may know her by her artist project Fine Food Market), it's a spacious and gorgeous setting to get comfortable and hang out with new friends and old. Three amazing musical projects followed by a DJ set - this show is all about making connections with the present, the past, and the future.",
+      "image": "/images/shows/And Friends 04 Poster Main.png",
+      "series": "And Friends",
+      "lineup": [
+        "Museums",
+        "Sara-Danielle",
+        "Renon"
+      ],
+      "ticketLink": "https://buytickets.at/favouritelibrary1/1675707"
+    },
+    {
+      "id": "late-fees-03",
+      "title": "Late Fees 03",
+      "date": "March 8, 2025",
+      "time": "7:00 PM",
+      "venue": "DE STIIL",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/Late Fees 03 Poster Main.jpg",
+      "series": "Late Fees",
+      "lineup": [
+        "Savanna Leigh",
+        "Grace Clarke",
+        "Noémie Kaiser"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1603733https://www.tickettailor.com/events/favouritelibrary1/1603733"
+    },
+    {
+      "id": "afternoon-tea-house-03",
+      "title": "Afternoon Tea House 03",
+      "date": "December 14, 2024",
+      "time": "3:00 PM",
+      "venue": "Studio Le Crib",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/Afternoon Tea House 03 Poster Main.JPG",
+      "series": "Afternoon Tea House",
+      "lineup": [
+        "Oliver Forest",
+        "Gabriella Olivo",
+        "Clay Pigeon"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1485893https://www.tickettailor.com/events/favouritelibrary1/1485893"
+    },
+    {
+      "id": "late-fees-02",
+      "title": "Late Fees 02",
+      "date": "September 28, 2024",
+      "time": "6:15 PM",
+      "venue": "Librarie St Henri",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/Late Fees 02 Poster Main.png",
+      "series": "Late Fees",
+      "lineup": [
+        "Matthew Loveyou",
+        "Fine Food Market",
+        "Mellow Casualty"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1393856https://www.tickettailor.com/events/favouritelibrary1/1393856"
+    },
+    {
+      "id": "and-friends-03",
+      "title": "And Friends 03",
+      "date": "August 10, 2024",
+      "time": "7:00 PM",
+      "venue": "Studio Madame Wood",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/And Friends 03 Poster Main.jpg",
+      "series": "And Friends",
+      "lineup": [
+        "Fruit Snack",
+        "The Everywheres",
+        "Frown Line"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1323051https://www.tickettailor.com/events/favouritelibrary1/1323051"
+    },
+    {
+      "id": "handmade-01",
+      "title": "Handmade 01",
+      "date": "June 6, 2024",
+      "time": "6:30 PM",
+      "venue": "Art et Fleurs",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "Our first \"Handmade\" Show where guests were welcome to build their own bouquet with the guidance from the amazing Arts et Fleurs staff.",
+      "image": "/images/shows/Handmade 01 Poster Main.jpg",
+      "series": "Handmade",
+      "lineup": [
+        "BOZOBABY",
+        "Edwin Raphael",
+        "Microwave Tower",
+        "Afternoon Bike Ride"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1264733https://www.tickettailor.com/events/favouritelibrary1/1264733"
+    },
+    {
+      "id": "afternoon-tea-house-02",
+      "title": "Afternoon Tea House 02",
+      "date": "April 27, 2024",
+      "time": "6:15 PM",
+      "venue": "AYM Ashtanga Yoga Montreal AYM Ashtanga Yoga Montreal",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/Afternoon Tea House 02 Poster Main.png",
+      "series": "Afternoon Tea House",
+      "lineup": [
+        "Drucker",
+        "Milan André Boronell",
+        "Dahlia Rue",
+        "Luminescent"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1226343https://www.tickettailor.com/events/favouritelibrary1/1226343"
+    },
+    {
+      "id": "late-fees-01",
+      "title": "Late Fees 01",
+      "date": "November 24, 2023",
+      "time": "7:00 PM",
+      "venue": "N/A",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/Late Fees 01 Poster Main.png",
+      "series": "Late Fees",
+      "lineup": [
+        "Hank's Dream",
+        "Flara K",
+        "Holly Mclachlan",
+        "Alex Mick"
+      ],
+      "ticketLink": "N/A"
+    },
+    {
+      "id": "and-friends-02",
+      "title": "And Friends 02",
+      "date": "August 13, 2023",
+      "time": "6:00 PM",
+      "venue": "Cafe Camas",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/And Friends 02 Poster Main.png",
+      "series": "And Friends",
+      "lineup": [
+        "Hotel Dog",
+        "girl with dream",
+        "Beach Season",
+        "School House"
+      ],
+      "ticketLink": "N/A"
+    },
+    {
+      "id": "afternoon-tea-house-01",
+      "title": "Afternoon Tea House 01",
+      "date": "March 26, 2023",
+      "time": "2:00 PM",
+      "venue": "Edwins",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/Afternoon Tea House 01 Poster Main.png",
+      "series": "Afternoon Tea House",
+      "lineup": [
+        "Erin Marcellina",
+        "MEGGO",
+        "Chiara Savasta",
+        "Anna Justen"
+      ],
+      "ticketLink": "N/A"
+    },
+    {
+      "id": "and-friends-01",
+      "title": "And Friends 01",
+      "date": "December 1, 2022",
+      "time": "6:30 PM",
+      "venue": "Edwins",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "",
+      "image": "/images/shows/And Friends 01 Poster Main.jpg",
+      "series": "And Friends",
+      "lineup": [
+        "Nicholas Cangiano",
+        "Edwin Raphael",
+        "Dameer",
+        "Jayde",
+        "Laraw"
+      ],
+      "ticketLink": "N/A"
+    }
+  ]
+}
