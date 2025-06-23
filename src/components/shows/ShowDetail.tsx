@@ -2,18 +2,25 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import type { Show } from '@/types/show';
 
 interface ShowDetailProps {
-  show: any;
-  isUpcoming: boolean;
-  formatDate: (date: string) => string;
+  show: Show;
 }
 
 const ShowDetail: React.FC<ShowDetailProps> = ({
-  show,
-  isUpcoming,
-  formatDate
+  show
 }) => {
+  const { t, formatDate } = useLanguage();
+  
+  // Helper function to check if a show is upcoming
+  const isUpcoming = (dateString: string) => {
+    const eventDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return eventDate >= today;
+  };
   return (
     <div className="flex flex-col md:flex-row gap-8">
       {/* Left column - Poster */}
@@ -22,20 +29,20 @@ const ShowDetail: React.FC<ShowDetailProps> = ({
           <img 
             src={show.image}
             alt={show.title}
-            className={`w-full h-full object-cover ${!isUpcoming ? 'grayscale-[30%]' : ''}`}
+            className={`w-full h-full object-cover ${!isUpcoming(show.date) ? 'grayscale-[30%]' : ''}`}
           />
         </div>
         
         {/* Ticket button for mobile view */}
         <div className="mt-4 md:hidden">
-          {isUpcoming && show.ticketLink && (
+          {isUpcoming(show.date) && show.ticketLink && (
             <Button
               variant="primary"
               className="w-full"
               rightIcon={<ExternalLink size={16} />}
               onClick={() => window.open(show.ticketLink, '_blank')}
             >
-              Get Tickets
+{t('shows.tickets')}
             </Button>
           )}
         </div>
@@ -64,13 +71,13 @@ const ShowDetail: React.FC<ShowDetailProps> = ({
             
             {/* Ticket button for desktop */}
             <div className="hidden md:block">
-              {isUpcoming && show.ticketLink && (
+              {isUpcoming(show.date) && show.ticketLink && (
                 <Button
                   variant="primary"
                   rightIcon={<ExternalLink size={16} />}
                   onClick={() => window.open(show.ticketLink, '_blank')}
                 >
-                  Get Tickets
+    {t('shows.tickets')}
                 </Button>
               )}
             </div>
@@ -87,7 +94,7 @@ const ShowDetail: React.FC<ShowDetailProps> = ({
         {/* Lineup */}
         {show.lineup && show.lineup.length > 0 && (
           <div>
-            <h4 className="font-medium mb-3">Lineup</h4>
+            <h4 className="font-medium mb-3">{t('shows.lineup')}</h4>
             <div className="space-y-2">
               {show.lineup.map((artist: string, index: number) => (
                 <div 
@@ -105,7 +112,7 @@ const ShowDetail: React.FC<ShowDetailProps> = ({
         )}
         
         {/* Add to calendar option */}
-        {isUpcoming && (
+        {isUpcoming(show.date) && (
           <div className="pt-4 border-t border-surface-200">
             <Button
               variant="outline"
@@ -125,7 +132,7 @@ const ShowDetail: React.FC<ShowDetailProps> = ({
                 window.open(calendarUrl, '_blank');
               }}
             >
-              Add to Calendar
+{t('shows.addToCalendar')}
             </Button>
           </div>
         )}

@@ -1,7 +1,10 @@
 // src/components/sections/Releases.tsx
 'use client';
 import { useState, useMemo, useEffect } from 'react';
-import { releases } from '@/data/releases';
+import { useLocalizedData } from '@/hooks/useLocalizedData';
+import { useLanguage } from '@/context/LanguageContext';
+import { useStaticContent } from '@/content/staticContent';
+import type { Release } from '@/types/releases';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, ChevronDown } from 'lucide-react';
@@ -56,17 +59,6 @@ const LazyImage = ({ src, alt, className, imgClassName, onClick }: LazyImageProp
   );
 };
 
-// Get unique artists and release types for filters
-const getUniqueArtists = () => {
-  const artists = new Set<string>();
-  releases.forEach(release => {
-    release.artists.forEach(artist => artists.add(artist));
-  });
-  return ['All Artists', ...Array.from(artists)];
-};
-
-const RELEASE_TYPES = ['All Types', 'Single', 'EP', 'Album'];
-
 const getArtworkPath = (release: ReleaseDataFormat) => {
   // Check if artworkPath exists and isn't "None"
   if (release.artworkPath && release.artworkPath !== 'None') {
@@ -77,53 +69,131 @@ const getArtworkPath = (release: ReleaseDataFormat) => {
 };
 
 const Releases = () => {
+  // ==================================
+  // 1. ALL HOOKS FIRST (NO EXCEPTIONS!)
+  // ==================================
+  
+  // Language and content hooks
+  const { t, formatDate } = useLanguage();
+  const staticContent = useStaticContent();
+  const { data: releases, loading, error } = useLocalizedData<Release[]>('releases');
+  
+  // Modal hook
   const { openModal } = useModal();
-  const [artistFilter, setArtistFilter] = useState('All Artists');
-  const [typeFilter, setTypeFilter] = useState('All Types');
+  
+  // State hooks
+  const [artistFilter, setArtistFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [showAllReleases, setShowAllReleases] = useState(false);
-
-  // Observe the section for visibility
+  
+  // Intersection observer hook
   const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({
     triggerOnce: true,
     threshold: 0.1,
     rootMargin: '200px',
   });
 
-  // List of all unique artists for the dropdown
-  const uniqueArtists = useMemo(() => getUniqueArtists(), []);
-  
-  // Get featured release (first one by default)
-  const featuredRelease = useMemo(() => releases[0], []);
-  
-  // Function to format release date
-  const formatReleaseDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
 
-  // Filter releases based on selected filters, excluding the featured one
+  // ==================================
+  // 2. COMPUTED VALUES (useMemo)
+  // ==================================
+  
+  // Unique artists - handle null data
+  const uniqueArtists = useMemo(() => {
+    if (!releases) return [t('releases.allArtists')];
+    
+    const artists = new Set<string>();
+    releases.forEach(release => {
+      release.artists.forEach(artist => artists.add(artist));
+    });
+    return [t('releases.allArtists'), ...Array.from(artists)];
+  }, [releases, t]);
+  
+  // Release types
+  const RELEASE_TYPES = useMemo(() => 
+    [t('releases.allTypes'), 'Single', 'EP', 'Album'], 
+    [t]
+  );
+  
+  // Featured release - handle null data
+  const featuredRelease = useMemo(() => {
+    if (!releases || releases.length === 0) return null;
+    return releases[0];
+  }, [releases]);
+  
+  // Filtered releases - SIMPLIFIED like Shows section
   const filteredReleases = useMemo(() => {
+    if (!releases) return [];
+    
     return releases
-      .filter(release => release.id !== featuredRelease.id)
+      .filter(release => release.id !== featuredRelease?.id)
       .filter(release => {
-        // Filter by artist
+        // Simple string comparison - no translation matching!
         const passesArtistFilter = 
-          artistFilter === 'All Artists' || 
+          artistFilter === 'all' || 
           release.artists.includes(artistFilter);
         
-        // Filter by type
         const passesTypeFilter = 
-          typeFilter === 'All Types' || 
+          typeFilter === 'all' || 
           release.releaseType === typeFilter;
         
         return passesArtistFilter && passesTypeFilter;
       });
-  }, [artistFilter, typeFilter, featuredRelease.id]);
-
-  // Limit to 3 releases if not showing all
+  }, [releases, artistFilter, typeFilter, featuredRelease]);
+  
+  // Display releases
   const displayedReleases = showAllReleases 
     ? filteredReleases 
-    : filteredReleases.slice(0, 3);
+    : [];
+
+  // Temporary debug - remove after fixing
+  useEffect(() => {
+    console.log('Debug Info:');
+    console.log('Total releases:', releases?.length);
+    console.log('Featured release:', featuredRelease?.title);
+    console.log('Artist filter:', artistFilter);
+    console.log('Type filter:', typeFilter);
+    console.log('t("releases.allArtists"):', t('releases.allArtists'));
+    console.log('t("releases.allTypes"):', t('releases.allTypes'));
+    console.log('Filtered releases count:', filteredReleases.length);
+    console.log('Show button?', filteredReleases.length > 0);
+  }, [releases, featuredRelease, artistFilter, typeFilter, filteredReleases, t]);
+
+  // ==================================
+  // 3. HELPER FUNCTIONS
+  // ==================================
+  
+  const formatReleaseDate = (dateString: string) => {
+    return formatDate(dateString);
+  };
+
+  // ==================================
+  // 4. LOADING/ERROR STATES (AFTER ALL HOOKS!)
+  // ==================================
+  
+  if (loading) {
+    return (
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <p className="text-center">{t('common.loading')}</p>
+        </div>
+      </section>
+    );
+  }
+  
+  if (error || !releases) {
+    return (
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <p className="text-center text-red-600">{t('common.error')}</p>
+          <p className="text-center text-sm text-surface-500 mt-2">
+            Error details: {error || 'No data available'}
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   
   const handleReleaseClick = (release: ReleaseDataFormat) => {
     openModal(release.title, (
@@ -141,7 +211,7 @@ const Releases = () => {
             
             {/* Streaming links */}
             <div className="mt-4">
-              <h5 className="text-sm font-medium mb-2">Listen on:</h5>
+              <h5 className="text-sm font-medium mb-2">{t('releases.listen')}:</h5>
               <div className="flex flex-wrap gap-2">
                 {release.spotifyUrl && (
                   <a 
@@ -184,7 +254,7 @@ const Releases = () => {
             {/* Genres */}
             {release.genres && release.genres.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium mb-2">Genres:</h4>
+                <h4 className="text-sm font-medium mb-2">{t('releases.genres')}:</h4>
                 <div className="flex flex-wrap gap-2">
                   {release.genres.map((genre, index) => (
                     <span 
@@ -208,7 +278,7 @@ const Releases = () => {
             {/* Tracklist - without play functionality */}
             {release.tracks && release.tracks.length > 0 && (
               <div className="mt-6">
-                <h4 className="text-sm font-medium mb-3">Tracklist:</h4>
+                <h4 className="text-sm font-medium mb-3">{t('releases.tracklist')}:</h4>
                 <div className="space-y-1">
                   {release.tracks.map((trackTitle, index) => {
                     return (
@@ -238,119 +308,122 @@ const Releases = () => {
     <section ref={sectionRef} id="releases" className="py-24 relative">
       <div className="container mx-auto px-6 relative z-10">
         <SectionHeader 
-          title="Releases" 
-          subtitle="Artifacts of creation. Some of the gorgeous work that we've helped release."
+          title={t('nav.releases')} 
+          subtitle={staticContent.sections.releases.description}
         />
 
         {/* Featured Release Hero - Always load immediately */}
-        <div className="mt-10 mb-16">
-          <div className="flex flex-col md:flex-row gap-8 md:gap-12">
-            {/* Left side - Album artwork */}
-            <div className="w-full md:w-2/5">
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={getArtworkPath(featuredRelease)}
-                  alt={featuredRelease.title}
-                  className="w-full h-full object-cover shadow-md"
-                  loading="eager" // Use eager loading for featured content
-                />
-              </div>
-              
-              {/* Release stage badge - if applicable */}
-              {featuredRelease.releaseStage === 'marketing' && (
-                <div className="mt-3">
-                  <span className="inline-block px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
-                    Coming Soon
-                  </span>
+        {featuredRelease && (
+          <div className="mt-10 mb-16">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+              {/* Left side - Album artwork */}
+              <div className="w-full md:w-2/5">
+                <div className="aspect-square overflow-hidden">
+                  <img 
+                    src={getArtworkPath(featuredRelease)}
+                    alt={featuredRelease.title}
+                    className="w-full h-full object-cover shadow-md"
+                    loading="eager" // Use eager loading for featured content
+                  />
                 </div>
-              )}
-            </div>
-            
-            {/* Right side - Release info */}
-            <div className="w-full md:w-3/5">
-              <div className="text-sm font-mono text-surface-500 uppercase mb-1">
-                FEATURED {featuredRelease.releaseType}
-              </div>
-              <h3 className="font-display text-2xl md:text-3xl font-medium mb-2">{featuredRelease.title}</h3>
-              <p className="text-surface-600 text-lg mb-4">{featuredRelease.artists.join(', ')}</p>
-              
-              <div className="mb-4">
-                <span className="text-sm text-surface-500">{formatReleaseDate(featuredRelease.releaseDate)}</span>
-              </div>
-              
-              {/* Genres - if available */}
-              {featuredRelease.genres && featuredRelease.genres.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-surface-600 mb-2">Genres</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {featuredRelease.genres.map((genre: string, index: number) => (
-                      <span 
-                        key={index} 
-                        className="px-2 py-1 bg-surface-100 rounded-full text-xs text-surface-700"
-                      >
-                        {genre}
-                      </span>
-                    ))}
+                
+                {/* Release stage badge - if applicable */}
+                {featuredRelease.releaseStage === 'marketing' && (
+                  <div className="mt-3">
+                    <span className="inline-block px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+                      {t('releases.comingSoon')}
+                    </span>
                   </div>
+                )}
+              </div>
+              
+              {/* Right side - Release info */}
+              <div className="w-full md:w-3/5">
+                <div className="text-sm font-mono text-surface-500 uppercase mb-1">
+                  {t('releases.featuredRelease')} {featuredRelease.releaseType}
                 </div>
-              )}
-              
-              <p className="text-surface-700 mb-6 whitespace-pre-line">{featuredRelease.description}</p>
-              
-              {/* Tracklist - if available */}
-              {featuredRelease.tracks && featuredRelease.tracks.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-surface-600 mb-2">Tracklist</h4>
-                  <div className="space-y-1">
-                    {featuredRelease.tracks.map((trackTitle, index) => (
-                      <div key={index} className="flex items-center gap-3 py-1">
-                        <span className="font-mono text-xs text-surface-400 w-5 text-right">{index + 1}</span>
-                        <span>{trackTitle}</span>
-                      </div>
-                    ))}
+                <h3 className="font-display text-2xl md:text-3xl font-medium mb-2">{featuredRelease.title}</h3>
+                <p className="text-surface-600 text-lg mb-4">{featuredRelease.artists.join(', ')}</p>
+                
+                <div className="mb-4">
+                  <span className="text-sm text-surface-500">{formatReleaseDate(featuredRelease.releaseDate)}</span>
+                </div>
+                
+                {/* Genres - if available */}
+                {featuredRelease.genres && featuredRelease.genres.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-sm font-medium text-surface-600 mb-2">{t('releases.genres')}</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {featuredRelease.genres.map((genre: string, index: number) => (
+                        <span 
+                          key={index} 
+                          className="px-2 py-1 bg-surface-100 rounded-full text-xs text-surface-700"
+                        >
+                          {genre}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                )}
+                
+                <p className="text-surface-700 mb-6 whitespace-pre-line">{featuredRelease.description}</p>
+                
+                {/* Tracklist - if available */}
+                {featuredRelease.tracks && featuredRelease.tracks.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-sm font-medium text-surface-600 mb-2">{t('releases.tracklist')}</h4>
+                    <div className="space-y-1">
+                      {featuredRelease.tracks.map((trackTitle, index) => (
+                        <div key={index} className="flex items-center gap-3 py-1">
+                          <span className="font-mono text-xs text-surface-400 w-5 text-right">{index + 1}</span>
+                          <span>{trackTitle}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Streaming links */}
+                <div className="flex flex-wrap gap-2 mt-8">
+                  {featuredRelease.spotifyUrl && (
+                    <a 
+                      href={featuredRelease.spotifyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-4 py-2 bg-surface-100 hover:bg-surface-200 rounded-full text-sm transition-colors"
+                    >
+                      <span>{t('releases.listen')} on Spotify</span>
+                      <ExternalLink size={14} />
+                    </a>
+                  )}
+                  {featuredRelease.appleMusicUrl && (
+                    <a 
+                      href={featuredRelease.appleMusicUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-4 py-2 bg-surface-100 hover:bg-surface-200 rounded-full text-sm transition-colors"
+                    >
+                      <span>Apple Music</span>
+                      <ExternalLink size={14} />
+                    </a>
+                  )}
                 </div>
-              )}
-              
-              {/* Streaming links */}
-              <div className="flex flex-wrap gap-2 mt-8">
-                {featuredRelease.spotifyUrl && (
-                  <a 
-                    href={featuredRelease.spotifyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-4 py-2 bg-surface-100 hover:bg-surface-200 rounded-full text-sm transition-colors"
-                  >
-                    <span>Listen on Spotify</span>
-                    <ExternalLink size={14} />
-                  </a>
-                )}
-                {featuredRelease.appleMusicUrl && (
-                  <a 
-                    href={featuredRelease.appleMusicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-4 py-2 bg-surface-100 hover:bg-surface-200 rounded-full text-sm transition-colors"
-                  >
-                    <span>Apple Music</span>
-                    <ExternalLink size={14} />
-                  </a>
-                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
         
-        {/* Show more/less button */}
-        <div className="text-center mt-10">
-          <Button
-            variant="outline"
-            className="bg-white/50 hover:bg-white/70 backdrop-blur-sm"
-            onClick={() => setShowAllReleases(!showAllReleases)}
-          >
-            {showAllReleases ? "Show Less" : `See All ${filteredReleases.length + 1} Releases`}
-          </Button>
-        </div>
+        {/* Show More Button */}
+        {filteredReleases.length > 0 && (
+          <div className="text-center mt-8">
+            <button
+              onClick={() => setShowAllReleases(!showAllReleases)}
+              className="px-6 py-2 border border-surface-300 rounded-md hover:bg-surface-50 transition-colors"
+            >
+              {showAllReleases ? t('common.showLess') : t('common.showMore')}
+            </button>
+          </div>
+        )}
 
         {/* Additional releases - only shown when expanded */}
         {showAllReleases && (
@@ -359,7 +432,18 @@ const Releases = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-8">
               {/* Release type filter buttons */}
               <div className="flex rounded-lg border border-surface-200 p-1 bg-white/60 backdrop-blur-sm">
-                {RELEASE_TYPES.map(type => (
+                <button 
+                  className={cn(
+                    "px-4 py-2 text-sm rounded-md transition-colors",
+                    typeFilter === 'all' 
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-white/50"
+                  )}
+                  onClick={() => setTypeFilter('all')}
+                >
+                  {t('releases.allTypes')}
+                </button>
+                {['Single', 'EP', 'Album'].map(type => (
                   <button 
                     key={type}
                     className={cn(
@@ -382,7 +466,11 @@ const Releases = () => {
                   onChange={(e) => setArtistFilter(e.target.value)}
                   className="appearance-none px-4 py-2 pr-10 rounded-md border border-surface-200 bg-white/60 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
-                  {uniqueArtists.map(artist => (
+                  <option value="all">{t('releases.allArtists')}</option>
+                  {/* Get unique artists from releases */}
+                  {Array.from(new Set(
+                    releases?.flatMap(r => r.artists) || []
+                  )).map(artist => (
                     <option key={artist} value={artist}>
                       {artist}
                     </option>
@@ -392,13 +480,9 @@ const Releases = () => {
               </div>
             </div>
             
-            {/* Display results count */}
-            <p className="text-sm text-surface-500 mb-6">
-              Showing {filteredReleases.length} of {filteredReleases.length} releases
-            </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredReleases.map((release) => (
+              {displayedReleases.map((release) => (
                 <div key={release.id} className="group cursor-pointer" onClick={() => handleReleaseClick(release)}>
                   {/* Album artwork - square format with simple zoom on hover */}
                   <div className="aspect-square overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg">
@@ -424,17 +508,17 @@ const Releases = () => {
             {/* No results message */}
             {filteredReleases.length === 0 && (
               <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-lg border border-surface-200">
-                <p className="text-surface-500 mb-4">No releases found matching your filters.</p>
+                <p className="text-surface-500 mb-4">{t('releases.noResults')}</p>
                 <div className="flex gap-4 justify-center">
                   <Button 
                     variant="outline"
                     className="bg-white/50 hover:bg-white/70"
                     onClick={() => {
-                      setArtistFilter('All Artists');
-                      setTypeFilter('All Types');
+                      setArtistFilter(t('releases.allArtists'));
+                      setTypeFilter(t('releases.allTypes'));
                     }}
                   >
-                    Clear All Filters
+                    {t('releases.clearFilters')}
                   </Button>
                 </div>
               </div>

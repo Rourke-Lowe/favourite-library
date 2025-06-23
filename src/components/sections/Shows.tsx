@@ -5,41 +5,51 @@ import { ExternalLink, ChevronDown, Grid, List } from 'lucide-react';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { shows } from '@/data/shows';
+import { useLocalizedData } from '@/hooks/useLocalizedData';
+import { useLanguage } from '@/context/LanguageContext';
+import { useStaticContent } from '@/content/staticContent';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import type { Show } from '@/types/show';
 import ShowCard from '@/components/shows/ShowCard';
 import ShowListItem from '@/components/shows/ShowListItem';
 import ShowDetail from '@/components/shows/ShowDetail';
 import FeaturedShow from '@/components/shows/FeaturedShow';
 import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
-import { Show, ShowDataFormat } from '@/types/show';
-
-// Type for time filtering
-type TimeFilterType = 'all' | 'upcoming' | 'past';
-
-// Type for view mode
-type ViewMode = 'grid' | 'list';
-
-// Series filter options
-const SERIES_OPTIONS = [
-  { value: 'all', label: 'All Series' },
-  { value: 'Late Fees', label: 'Late Fees' },
-  { value: 'Afternoon Tea House', label: 'Afternoon Tea House' },
-  { value: 'Handmade', label: 'Handmade' },
-  { value: 'And Friends', label: 'And Friends' },
-  { value: 'Common Ground', label: 'Common Ground' }
-];
+import { ShowDataFormat } from '@/types/show';
 
 const Shows = () => {
+  // ========================================
+  // SECTION 1: ALL HOOKS (NO EXCEPTIONS!)
+  // ========================================
+  
+  // Translation hooks
+  const { t, formatDate } = useLanguage();
+  const staticContent = useStaticContent();
+  const { data: shows, loading, error } = useLocalizedData<Show[]>('shows');
+  
+  // Modal hook
   const { openModal } = useModal();
-  const [timeFilter, setTimeFilter] = useState<TimeFilterType>('all');
+  
+  // State hooks - KEEP ALL YOUR EXISTING ONES!
+  const [timeFilter, setTimeFilter] = useState<'all' | 'upcoming' | 'past'>('all');
   const [seriesFilter, setSeriesFilter] = useState('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAllShows, setShowAllShows] = useState(false);
   
+  // Media query hook
   const isMobile = useMediaQuery('(max-width: 768px)');
-
-  // Helper function to check if a show is upcoming
+  
+  // Intersection observer
+  const [sectionRef, isSectionVisible] = useIntersectionObserver<HTMLElement>({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+  
+  // ========================================
+  // SECTION 2: HELPER FUNCTIONS
+  // ========================================
+  
   const isUpcoming = (dateString: string) => {
     const eventDate = new Date(dateString);
     const today = new Date();
@@ -47,27 +57,33 @@ const Shows = () => {
     return eventDate >= today;
   };
   
-  // Format date function
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short',
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric'
-    });
-  };
+  // ========================================
+  // SECTION 3: MEMOIZED VALUES
+  // ========================================
   
-  // Get featured show
+  // Series options - with translation
+  const SERIES_OPTIONS = useMemo(() => [
+    { value: 'all', label: t('shows.allShows') },
+    { value: 'Late Fees', label: 'Late Fees' },
+    { value: 'Afternoon Tea House', label: 'Afternoon Tea House' },
+    { value: 'Handmade', label: 'Handmade' },
+    { value: 'And Friends', label: 'And Friends' },
+    { value: 'Common Ground', label: 'Common Ground' }
+  ], [t]);
+  
+  // Featured show - handle null data
   const featuredShow = useMemo(() => {
+    if (!shows || shows.length === 0) return null;
     const upcomingShows = shows.filter(show => isUpcoming(show.date));
     return upcomingShows.length > 0 ? upcomingShows[0] : shows[0];
-  }, []);
+  }, [shows]);
   
-  // Apply filters
+  // Filtered shows - handle null data
   const filteredShows = useMemo(() => {
+    if (!shows) return [];
+    
     return shows
-      .filter(show => show.id !== featuredShow.id)
+      .filter(show => show.id !== featuredShow?.id)
       .filter(show => {
         const passesTimeFilter = 
           timeFilter === 'all' ? true :
@@ -75,55 +91,80 @@ const Shows = () => {
           !isUpcoming(show.date);
         
         const passesSeriesFilter = 
-          seriesFilter === 'all' ? true :
+          seriesFilter === 'all' || 
           show.series === seriesFilter;
         
         return passesTimeFilter && passesSeriesFilter;
-      })
-      .sort((a, b) => {
-        const aDate = new Date(a.date);
-        const bDate = new Date(b.date);
-        
-        if (isUpcoming(a.date) && !isUpcoming(b.date)) return -1;
-        if (!isUpcoming(a.date) && isUpcoming(b.date)) return 1;
-        
-        if (isUpcoming(a.date)) {
-          return aDate.getTime() - bDate.getTime();
-        }
-        
-        return bDate.getTime() - aDate.getTime();
       });
-  }, [timeFilter, seriesFilter, featuredShow.id]);
-
-  const handleShowClick = (show: ShowDataFormat) => {
+  }, [shows, timeFilter, seriesFilter, featuredShow]);
+  
+  // Display shows
+  const displayedShows = showAllShows 
+    ? filteredShows 
+    : filteredShows.slice(0, 6);
+  
+  // ========================================
+  // SECTION 4: EVENT HANDLERS
+  // ========================================
+  
+  const handleShowClick = (show: Show) => {
     openModal(show.title, (
-      <ShowDetail
-        show={show}
-        isUpcoming={isUpcoming(show.date)}
-        formatDate={formatDate}
-      />
+      <ShowDetail show={show} />
     ));
   };
   
+  // ========================================
+  // SECTION 5: LOADING/ERROR (AFTER ALL HOOKS!)
+  // ========================================
+  
+  if (loading) {
+    return (
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <p className="text-surface-600">{t('common.loading')}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
+  if (error || !shows) {
+    return (
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <p className="text-red-600 mb-2">{t('common.error')}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="text-primary underline"
+            >
+              {t('common.retry')}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
+  // ========================================
+  // SECTION 6: MAIN RENDER
+  // ========================================
+  
   return (
-    <section id="shows" className="py-24 relative">
+    <section ref={sectionRef} id="shows" className="py-24 relative">
       <div className="container mx-auto px-6">
         <SectionHeader 
-          title="Shows" 
+          title={t('nav.shows')} 
+          subtitle={staticContent.sections.shows.description}
         />
         
-        {/* Custom subtitle with hyperlink - left aligned */}
-        <div className="mb-12 -mt-8">
-          <p className="text-surface-600 max-w-3xl">
-            We run shows every couple of months in beautiful unique locations around Montreal. 
-            </p>
-            <p className="text-surface-600 max-w-3xl">Want to play a show? <a 
-              href="https://forms.gle/PB2n3TBa6xGPCgks8" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
-            >
-              Click here!
+        {/* CTA Section */}
+        <div className="text-center mb-8">
+          <p className="text-surface-600">
+            {staticContent.sections.shows.ctaText}{' '}
+            <a href="/contact" className="text-primary underline">
+              {staticContent.sections.shows.ctaLink}
             </a>
           </p>
         </div>
@@ -144,7 +185,7 @@ const Shows = () => {
             variant="outline"
             onClick={() => setShowAllShows(!showAllShows)}
           >
-            {showAllShows ? "Show Less" : `See All ${filteredShows.length + 1} Shows`}
+{showAllShows ? t('common.showLess') : t('shows.allShows')}
           </Button>
         </div>
         
@@ -155,7 +196,7 @@ const Shows = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-8">
               {/* Time filter */}
               <div className="flex rounded-lg border border-surface-200 p-1">
-                {(['all', 'upcoming', 'past'] as TimeFilterType[]).map(filter => (
+                {(['all', 'upcoming', 'past'] as const).map(filter => (
                   <button 
                     key={filter}
                     className={cn(
@@ -166,7 +207,7 @@ const Shows = () => {
                     )}
                     onClick={() => setTimeFilter(filter)}
                   >
-                    {filter}
+{filter === 'all' ? t('shows.allShows') : filter === 'upcoming' ? t('shows.upcoming') : t('shows.past')}
                   </button>
                 ))}
               </div>
@@ -197,7 +238,7 @@ const Shows = () => {
                         viewMode === 'grid' ? "bg-surface-200" : "hover:bg-surface-100"
                       )}
                       onClick={() => setViewMode('grid')}
-                      aria-label="Grid view"
+aria-label="Grid view"
                     >
                       <Grid size={18} />
                     </button>
@@ -207,7 +248,7 @@ const Shows = () => {
                         viewMode === 'list' ? "bg-surface-200" : "hover:bg-surface-100"
                       )}
                       onClick={() => setViewMode('list')}
-                      aria-label="List view"
+aria-label="List view"
                     >
                       <List size={18} />
                     </button>
@@ -218,7 +259,7 @@ const Shows = () => {
 
             {/* Results count */}
             <p className="text-sm text-surface-500 mb-6">
-              Showing {filteredShows.length} of {filteredShows.length} shows
+  Showing {filteredShows.length} of {filteredShows.length} shows
             </p>
             
             {/* Shows display */}
@@ -259,7 +300,7 @@ const Shows = () => {
                     setSeriesFilter('all');
                   }}
                 >
-                  Clear All Filters
+Clear All Filters
                 </Button>
               </div>
             )}
