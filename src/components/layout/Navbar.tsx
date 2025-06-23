@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Navbar = () => {
   const [activeSection, setActiveSection] = useState('hero');
+  const { t } = useLanguage();
   const [isSticky, setIsSticky] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const observerTargetRef = useRef<HTMLDivElement>(null);
@@ -171,23 +173,29 @@ const Navbar = () => {
           {/* Navigation links - always right-aligned - Added Contact and increased text size */}
           <div className="flex items-center space-x-6 ml-auto">
             <ul className="flex space-x-6 md:space-x-12">
-              {['About', 'Artists', 'Shows', 'Releases', 'Contact'].map((item) => (
-              <li key={item}>
+              {[
+                { key: 'about', label: t('nav.about') },
+                { key: 'artists', label: t('nav.artists') },
+                { key: 'shows', label: t('nav.shows') },
+                { key: 'releases', label: t('nav.releases') },
+                { key: 'contact', label: t('nav.contact') }
+              ].map((item) => (
+              <li key={item.key}>
                 <a 
-                  href={`#${item.toLowerCase()}`}
-                  onClick={(e) => handleNavClick(e, item.toLowerCase())}
+                  href={`#${item.key}`}
+                  onClick={(e) => handleNavClick(e, item.key)}
                   className={`transition-all duration-200 font-mono text-sm uppercase tracking-wider hover:text-primary relative py-2 ${
-                    activeSection === item.toLowerCase() 
+                    activeSection === item.key 
                       ? 'text-primary' 
                       : 'text-foreground'
                   }`}
                 >
-                  {item}
+                  {item.label}
                   
                   {/* Animated underline for active item */}
                   <span 
                     className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary rounded transform origin-left transition-transform duration-300 ${
-                      activeSection === item.toLowerCase() ? 'scale-x-100' : 'scale-x-0'
+                      activeSection === item.key ? 'scale-x-100' : 'scale-x-0'
                     }`}
                   />
                 </a>

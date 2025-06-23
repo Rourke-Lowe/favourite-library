@@ -1,0 +1,1 @@
+I'm going to provide you with step by step instructions that will help us implement and fix new features. Each step will provide the scope of what we want to accomplish in that step, and i don't want you to do anything that's outside the scope of those changes. 

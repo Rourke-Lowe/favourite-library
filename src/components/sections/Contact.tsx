@@ -3,8 +3,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail, Music, Send, ExternalLink } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { useStaticContent } from '@/content/staticContent';
 
 const Contact = () => {
+  const { locale } = useLanguage();
+  const staticContent = useStaticContent();
+  const content = staticContent.sections.contact;
   const handleNewsletterSignup = () => {
     const newsletterUrl = process.env.NEXT_PUBLIC_NEWSLETTER_URL || 'https://mookee.link/favourite-library';
     window.open(newsletterUrl, '_blank');
@@ -20,9 +25,9 @@ const Contact = () => {
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="font-display text-title mb-4">Get in touch</h2>
+          <h2 className="font-display text-title mb-4">{content.title}</h2>
           <p className="text-surface-600 max-w-2xl mx-auto">
-            Connect with us through one of the options below.
+            {content.subtitle}
           </p>
         </div>
         
@@ -33,9 +38,9 @@ const Contact = () => {
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="text-primary" size={24} />
             </div>
-            <h3 className="font-medium mb-2">Stay Updated</h3>
+            <h3 className="font-medium mb-2">{content.newsletter.title}</h3>
             <p className="text-sm text-surface-600 mb-4">
-              Get the latest on releases, shows, and other things we care about.
+              {content.newsletter.description}
             </p>
             <Button
               variant="outline"
@@ -44,7 +49,7 @@ const Contact = () => {
               onClick={handleNewsletterSignup}
               aria-label="Join our newsletter - opens in new tab"
             >
-              Join Newsletter
+              {content.newsletter.button}
             </Button>
           </div>
 
@@ -53,9 +58,9 @@ const Contact = () => {
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Music className="text-primary" size={24} />
             </div>
-            <h3 className="font-medium mb-2">Play a Show</h3>
+            <h3 className="font-medium mb-2">{content.artistSubmission.title}</h3>
             <p className="text-sm text-surface-600 mb-4">
-              Share your project to play at an upcoming show.
+              {content.artistSubmission.description}
             </p>
             <Button
               variant="outline"
@@ -65,7 +70,7 @@ const Contact = () => {
               onClick={handleArtistSubmission}
               aria-label="Request to play a show - opens in new tab"
             >
-              Play a Show
+              {content.artistSubmission.button}
             </Button>
           </div>
 
@@ -74,9 +79,9 @@ const Contact = () => {
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <ExternalLink className="text-primary" size={24} />
             </div>
-            <h3 className="font-medium mb-2">Direct Contact</h3>
+            <h3 className="font-medium mb-2">{content.direct.title}</h3>
             <p className="text-sm text-surface-600 mb-4">
-              Reach out directly for partnerships or business inquiries.
+              {content.direct.description}
             </p>
             <div className="space-y-2">
               <a 
@@ -92,7 +97,7 @@ const Contact = () => {
         {/* Footer text */}
         <div className="text-center">
           <p className="text-xs text-surface-500">
-            Based in Tiohtià:ke/Montreal, Canada
+            {content.footer}
           </p>
         </div>
       </div>

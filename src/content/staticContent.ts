@@ -15,6 +15,18 @@ export const staticContent = {
       },
       about: {
         title: "About Favourite Library",
+        quote: "Favourite Library is all about the sustainability of art",
+        description: "An indie music label based in Tiohtià:ke/Montreal, Canada. Monthly unplugged intimate shows and artist label services.",
+        statements: [
+          "We are dedicated to tea, music, and community.",
+          "A space to support artists in channeling their vision.",
+          "A library to discover new music, art, creation."
+        ],
+        newsletter: {
+          title: "Stay Connected",
+          description: "Get updates on new releases, upcoming shows, and behind-the-scenes content.",
+          button: "Join Our Newsletter"
+        },
         content: `Favourite Library is an independent music label based in Montreal, Quebec. 
                   We believe in the power of music to connect people and create meaningful experiences.
                   
@@ -37,6 +49,30 @@ export const staticContent = {
             }
           ]
         }
+      },
+      contact: {
+        title: "Get in touch",
+        subtitle: "Connect with us through one of the options below.",
+        
+        newsletter: {
+          title: "Stay Updated",
+          description: "Get the latest on releases, shows, and other things we care about.",
+          button: "Join Newsletter"
+        },
+        
+        artistSubmission: {
+          title: "Play a Show",
+          description: "Share your project to play at an upcoming show.",
+          button: "Play a Show"
+        },
+        
+        direct: {
+          title: "Direct Contact",
+          description: "Reach out directly for partnerships or business inquiries.",
+          email: "favouritelibrarylabel@gmail.com"
+        },
+        
+        footer: "Based in Tiohtià:ke/Montreal, Canada"
       }
     },
     footer: {
@@ -64,6 +100,18 @@ export const staticContent = {
       },
       about: {
         title: "À propos de Favourite Library",
+        quote: "Favourite Library, c'est la durabilité de l'art",
+        description: "Un label de musique indépendant basé à Tiohtià:ke/Montréal, Canada. Des spectacles acoustiques intimes mensuels et des services de label pour artistes.",
+        statements: [
+          "Nous sommes dédiés au thé, à la musique et à la communauté.",
+          "Un espace pour soutenir les artistes dans la canalisation de leur vision.",
+          "Une bibliothèque pour découvrir de la nouvelle musique, de l'art, de la création."
+        ],
+        newsletter: {
+          title: "Restez connecté",
+          description: "Recevez les dernières nouvelles sur les sorties, les spectacles à venir et le contenu en coulisses.",
+          button: "Rejoindre notre infolettre"
+        },
         content: `Favourite Library est un label de musique indépendant basé à Montréal, Québec.
                   Nous croyons au pouvoir de la musique pour connecter les gens et créer des expériences significatives.
                   
@@ -86,6 +134,30 @@ export const staticContent = {
             }
           ]
         }
+      },
+      contact: {
+        title: "Contactez-nous",
+        subtitle: "Connectez-vous avec nous par l'une des options ci-dessous.",
+        
+        newsletter: {
+          title: "Restez informé",
+          description: "Recevez les dernières nouvelles sur les sorties, les spectacles et autres choses qui nous tiennent à cœur.",
+          button: "Rejoindre l'infolettre"
+        },
+        
+        artistSubmission: {
+          title: "Jouer un spectacle",
+          description: "Partagez votre projet pour jouer lors d'un prochain spectacle.",
+          button: "Jouer un spectacle"
+        },
+        
+        direct: {
+          title: "Contact direct",
+          description: "Contactez-nous directement pour des partenariats ou des demandes commerciales.",
+          email: "favouritelibrarylabel@gmail.com"
+        },
+        
+        footer: "Basé à Tiohtià:ke/Montréal, Canada"
       }
     },
     footer: {
