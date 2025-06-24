@@ -8,6 +8,11 @@ import { useLanguage } from '@/context/LanguageContext';
 const Navbar = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const { t } = useLanguage();
+  
+  // Temporary debug
+  useEffect(() => {
+    console.log('Active section:', activeSection);
+  }, [activeSection]);
   const [isSticky, setIsSticky] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const observerTargetRef = useRef<HTMLDivElement>(null);
@@ -117,6 +122,9 @@ const Navbar = () => {
       top: targetPosition,
       behavior: 'smooth'
     });
+    
+    // THIS IS IMPORTANT - Update active section immediately
+    setActiveSection(sectionId);
     
     // Update URL without causing jump
     window.history.pushState({}, '', `#${sectionId}`);

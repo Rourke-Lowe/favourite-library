@@ -2,6 +2,7 @@
 'use client';
 import { useLocalizedData } from '@/hooks/useLocalizedData';
 import { useLanguage } from '@/context/LanguageContext';
+import { useStaticContent } from '@/content/staticContent';
 import type { Artist } from '@/types/artist';
 import SectionHeader from '@/components/ui/SectionHeader';
 import OptimizedImage from '@/components/ui/OptimizedImage';
@@ -10,6 +11,7 @@ import { useModal } from '@/context/ModalContext';
 
 const Artists = () => {
   const { t } = useLanguage();
+  const staticContent = useStaticContent();
   const { data: artists, loading, error } = useLocalizedData<Artist[]>('artists');
   const { openModal } = useModal();
   
@@ -143,7 +145,7 @@ const Artists = () => {
       <div className="container mx-auto px-6">
         <SectionHeader 
           title={t('nav.artists')} 
-          subtitle="We work with amazing artists building beautiful words."
+          subtitle={staticContent.sections.artists.description}
         />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -32,7 +32,6 @@ const Shows = () => {
   const { openModal } = useModal();
   
   // State hooks - KEEP ALL YOUR EXISTING ONES!
-  const [timeFilter, setTimeFilter] = useState<'all' | 'upcoming' | 'past'>('all');
   const [seriesFilter, setSeriesFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAllShows, setShowAllShows] = useState(false);
@@ -83,20 +82,19 @@ const Shows = () => {
     if (!shows) return [];
     
     return shows
-      .filter(show => show.id !== featuredShow?.id)
       .filter(show => {
-        const passesTimeFilter = 
-          timeFilter === 'all' ? true :
-          timeFilter === 'upcoming' ? isUpcoming(show.date) :
-          !isUpcoming(show.date);
+        // Exclude featured show from the list
+        if (featuredShow && show.id === featuredShow.id) return false;
         
+        // Series filter logic only
         const passesSeriesFilter = 
           seriesFilter === 'all' || 
           show.series === seriesFilter;
         
-        return passesTimeFilter && passesSeriesFilter;
-      });
-  }, [shows, timeFilter, seriesFilter, featuredShow]);
+        return passesSeriesFilter;
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Newest first
+  }, [shows, seriesFilter, featuredShow]);
   
   // Display shows
   const displayedShows = showAllShows 
@@ -194,24 +192,6 @@ const Shows = () => {
           <>
             {/* Filters */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-8">
-              {/* Time filter */}
-              <div className="flex rounded-lg border border-surface-200 p-1">
-                {(['all', 'upcoming', 'past'] as const).map(filter => (
-                  <button 
-                    key={filter}
-                    className={cn(
-                      "px-4 py-2 text-sm rounded-md capitalize transition-colors",
-                      timeFilter === filter 
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-surface-100"
-                    )}
-                    onClick={() => setTimeFilter(filter)}
-                  >
-{filter === 'all' ? t('shows.allShows') : filter === 'upcoming' ? t('shows.upcoming') : t('shows.past')}
-                  </button>
-                ))}
-              </div>
-              
               <div className="flex gap-4">
                 {/* Series filter */}
                 <div className="relative">
@@ -296,7 +276,6 @@ aria-label="List view"
                 <Button 
                   variant="outline"
                   onClick={() => {
-                    setTimeFilter('all');
                     setSeriesFilter('all');
                   }}
                 >

@@ -415,13 +415,13 @@ const Releases = () => {
         
         {/* Show More Button */}
         {filteredReleases.length > 0 && (
-          <div className="text-center mt-8">
-            <button
+          <div className="text-center mt-10">
+            <Button
+              variant="outline"
               onClick={() => setShowAllReleases(!showAllReleases)}
-              className="px-6 py-2 border border-surface-300 rounded-md hover:bg-surface-50 transition-colors"
             >
               {showAllReleases ? t('common.showLess') : t('common.showMore')}
-            </button>
+            </Button>
           </div>
         )}
 
