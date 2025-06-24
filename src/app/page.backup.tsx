@@ -1,7 +1,7 @@
 // src/app/page.tsx
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
-import NavigationWrapper from '@/components/layout/NavigationWrapper';
+import Navbar from '@/components/layout/Navbar';
 import Artists from '@/components/sections/Artists';
 import Releases from '@/components/sections/Releases';
 import Shows from '@/components/sections/Shows';
@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <NavigationWrapper />
+      <Navbar />
       <About />
       <Artists />
       <Shows />

@@ -1,26 +1,40 @@
 // src/hooks/useMediaQuery.ts
 import { useState, useEffect } from 'react';
 
+/**
+ * Hook to detect if viewport matches a media query
+ * @param query - Media query string like '(max-width: 768px)'
+ * @returns boolean indicating if query matches
+ */
 export function useMediaQuery(query: string): boolean {
+  // Start with false for SSR compatibility
   const [matches, setMatches] = useState(false);
-  
+
   useEffect(() => {
-    const media = window.matchMedia(query);
+    // Create media query list
+    const mediaQuery = window.matchMedia(query);
     
-    // Update the state with the current value
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    
-    // Create a listener function
-    const listener = () => setMatches(media.matches);
-    
-    // Add the listener to watch for changes
-    media.addEventListener('change', listener);
-    
-    // Remove the listener on cleanup
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
-  
+    // Set initial value
+    setMatches(mediaQuery.matches);
+
+    // Create event listener
+    const handleChange = (event: MediaQueryListEvent) => {
+      setMatches(event.matches);
+    };
+
+    // Add listener (using addEventListener for better compatibility)
+    mediaQuery.addEventListener('change', handleChange);
+
+    // Cleanup
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [query]);
+
   return matches;
+}
+
+// Export a specific hook for mobile detection
+export function useIsMobile(): boolean {
+  return useMediaQuery('(max-width: 767px)');
 }
