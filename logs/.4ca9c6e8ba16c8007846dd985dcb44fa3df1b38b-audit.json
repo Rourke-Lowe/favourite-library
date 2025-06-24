@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/.4ca9c6e8ba16c8007846dd985dcb44fa3df1b38b-audit.json",
+    "files": [
+        {
+            "date": 1750772615797,
+            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-06-24.log",
+            "hash": "11d55c4fae24dccd004895cf4e01f2004b3723d943bde7888b04f6ee1e8bb183"
+        }
+    ],
+    "hashType": "sha256"
+}
