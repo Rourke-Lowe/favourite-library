@@ -58,6 +58,11 @@ body {
   color: hsl(var(--foreground));
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* Better mobile scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Optimize for GPU compositing */
+  transform: translateZ(0);
+  backface-visibility: hidden;
   -moz-osx-font-smoothing: grayscale;
 }
 
@@ -71,6 +76,10 @@ body {
   overflow: hidden;
   z-index: -1;
   pointer-events: none;
+  /* Performance optimizations */
+  contain: layout style paint;
+  transform: translateZ(0);
+  -webkit-overflow-scrolling: touch;
 }
 
 .parallax-layer {
@@ -83,6 +92,32 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   will-change: transform;
+  /* GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Mobile-specific parallax optimizations */
+@media (max-width: 768px) {
+  .parallax-container {
+    contain: strict;
+    image-rendering: optimizeSpeed;
+  }
+  
+  .parallax-layer {
+    image-rendering: optimizeSpeed;
+    /* Reduced layer height for mobile performance */
+    height: 110%;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .parallax-layer {
+    transform: none !important;
+    will-change: auto;
+  }
 }
 
 /* Main content */
