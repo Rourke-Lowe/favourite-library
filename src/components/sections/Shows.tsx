@@ -5,11 +5,11 @@ import { ExternalLink, ChevronDown, Grid, List } from 'lucide-react';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { useLocalizedData } from '@/hooks/useLocalizedData';
 import { useLanguage } from '@/context/LanguageContext';
 import { useStaticContent } from '@/content/staticContent';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import type { Show } from '@/types/show';
+import type { LocalizedSiteData } from '@/lib/dataLoader';
 import ShowCard from '@/components/shows/ShowCard';
 import ShowListItem from '@/components/shows/ShowListItem';
 import ShowDetail from '@/components/shows/ShowDetail';
@@ -18,15 +18,20 @@ import { cn } from '@/lib/utils';
 import { useModal } from '@/context/ModalContext';
 import { ShowDataFormat } from '@/types/show';
 
-const Shows = () => {
+interface ShowsProps {
+  siteData: LocalizedSiteData;
+}
+
+const Shows = ({ siteData }: ShowsProps) => {
   // ========================================
   // SECTION 1: ALL HOOKS (NO EXCEPTIONS!)
   // ========================================
   
   // Translation hooks
-  const { t, formatDate } = useLanguage();
+  const { t, formatDate, locale } = useLanguage();
   const staticContent = useStaticContent();
-  const { data: shows, loading, error } = useLocalizedData<Show[]>('shows');
+  const currentLocale = (locale === 'fr') ? 'fr' : 'en';
+  const shows = siteData[currentLocale]?.shows || [];
   
   // Modal hook
   const { openModal } = useModal();
@@ -115,30 +120,12 @@ const Shows = () => {
   // SECTION 5: LOADING/ERROR (AFTER ALL HOOKS!)
   // ========================================
   
-  if (loading) {
+  if (!shows || shows.length === 0) {
     return (
       <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <p className="text-surface-600">{t('common.loading')}</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-  
-  if (error || !shows) {
-    return (
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <p className="text-red-600 mb-2">{t('common.error')}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="text-primary underline"
-            >
-              {t('common.retry')}
-            </button>
+            <p className="text-surface-600">No shows found</p>
           </div>
         </div>
       </section>
@@ -271,7 +258,7 @@ aria-label="List view"
             
             {/* Empty state */}
             {filteredShows.length === 0 && (
-              <div className="text-center py-16 bg-surface-50 rounded-lg">
+              <div className="text-center py-16 bg-white/10 backdrop-blur-sm rounded-lg">
                 <p className="text-surface-500 mb-4">No shows found matching your filters.</p>
                 <Button 
                   variant="outline"

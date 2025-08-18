@@ -5,15 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Mail, Music, Send, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useStaticContent } from '@/content/staticContent';
+import NewsletterWidget from '@/components/ui/NewsletterWidget';
 
 const Contact = () => {
   const { locale } = useLanguage();
   const staticContent = useStaticContent();
   const content = staticContent.sections.contact;
-  const handleNewsletterSignup = () => {
-    const newsletterUrl = process.env.NEXT_PUBLIC_NEWSLETTER_URL || 'https://mookee.link/favourite-library';
-    window.open(newsletterUrl, '_blank');
-  };
 
   const handleArtistSubmission = () => {
     const submissionUrl = process.env.NEXT_PUBLIC_ARTIST_SUBMISSION_URL || 'https://forms.gle/XfzzmA2EmefqAHyA7';
@@ -21,7 +18,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-16 border-t border-surface-200 bg-background/30 backdrop-blur-sm">
+    <section id="contact" className="py-16 border-t border-surface-200">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -33,7 +30,7 @@ const Contact = () => {
         
         {/* Three-column layout */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {/* Newsletter */}
+          {/* Newsletter with Widget */}
           <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-surface-200">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="text-primary" size={24} />
@@ -42,15 +39,9 @@ const Contact = () => {
             <p className="text-sm text-surface-600 mb-4">
               {content.newsletter.description}
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={handleNewsletterSignup}
-              aria-label="Join our newsletter - opens in new tab"
-            >
-              {content.newsletter.button}
-            </Button>
+            <div className="mt-4">
+              <NewsletterWidget />
+            </div>
           </div>
 
           {/* Artist Submission */}

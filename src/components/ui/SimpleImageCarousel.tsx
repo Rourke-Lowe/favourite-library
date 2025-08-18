@@ -19,7 +19,7 @@ export default function SimpleImageCarousel() {
 
     const timer = setInterval(() => {
       setActiveIndex(current => (current + 1) % images.length);
-    }, 4000);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [isPaused]);

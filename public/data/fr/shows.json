@@ -1,6 +1,25 @@
 {
-  "generated": "2025-06-21T11:01:39.728431",
+  "generated": "2025-08-18T14:27:32.910313",
   "shows": [
+    {
+      "id": "handmade-02",
+      "title": "Handmade 02",
+      "date": "September 13, 2025",
+      "time": "7:30 PM",
+      "venue": "Cafe Camas",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "Nous sommes ravis de vous présenter **handmade 02**, notre deuxième édition de la série handmade. Cet événement unique réunit musique, mode vintage et créativité DIY dans un cadre intime au Cafe Camas x Ninety - une collaboration spéciale entre le café social club qui a accueilli notre premier événement et une boutique vintage soigneusement sélectionnée. Nous sommes une fois de plus très chanceux d'être rejoints par trois projets d'artistes étonnants : 1. Olivia Ridgely 2. Avery Jane 3. Aminala",
+      "image": "/images/shows/Coming Soon Poster Main.png",
+      "series": "Handmade",
+      "lineup": [
+        "Olivia Ridgley",
+        "Avery Jane",
+        "Aminala"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1825685"
+    },
     {
       "id": "common-ground-01",
       "title": "Common Ground 01",
@@ -10,11 +29,13 @@
       "address": "",
       "city": "Montreal",
       "country": "",
-      "description": "Favourite Library *Common Ground 01 ! Nous sommes ravis de vous présenter la série Common Ground. Une nouvelle série qui se déroulera en plein air et qui a pour but de nous connecter avec nous-mêmes et avec les autres. Avant et après l'événement, un animateur formé à la méditation et au travail sur la respiration dirigera une méditation facultative de 5 minutes sur la mise à la terre. Nous serons tous détendus et confortables, puis nous pourrons profiter de trois projets artistiques pour partager leur travail dans un patio arrière très confortable et isolé.",
-      "image": "/images/shows/Coming Soon Poster Main.png",
+      "description": "Nous avons été ravis d'introduire la série Common Ground. Cette nouvelle série s'est déroulée en plein air et a été consacrée à la connexion avec nous-mêmes et avec les autres. Avant et après l'événement, Selma Kihal, animatrice formée à la méditation et au travail sur la respiration, a dirigé une méditation facultative de 5 à 10 minutes sur la mise à la terre. Tout le monde s'est détendu et s'est senti à l'aise, puis a profité de trois projets artistiques pour partager leur travail sur une terrasse arrière isolée et très confortable. Les artistes qui se sont produits pour Common Ground 01 étaient : 1. Oscar Louis avec Chris Vincent 2. Charlie Houston 3. Anna Justen Les invités ont apporté des couvertures de pique-nique et beaucoup sont venus avec des journaux pour écrire ou dessiner, ou des objets qu'ils voulaient recharger avec les énergies joyeuses et paisibles évoquées par les sons. Les portes ont ouvert à 18 heures et le spectacle a commencé à 19 heures.",
+      "image": "/images/shows/Common Ground 01 Poster Main.jpg",
       "series": "Common Ground",
       "lineup": [
-        "TBD"
+        "Oscar Louis",
+        "Charlie Houston",
+        "Anna Justen"
       ],
       "ticketLink": "https://buytickets.at/favouritelibrary1/1749274/share/7d9612a845e70139d5deb421088ba90b"
     },

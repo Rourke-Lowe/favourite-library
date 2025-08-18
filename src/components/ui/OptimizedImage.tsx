@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useSharedIntersectionObserver } from '@/hooks/useSharedIntersectionObserver';
+import { useState } from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 interface OptimizedImageProps {
@@ -9,10 +9,10 @@ interface OptimizedImageProps {
   imgClassName?: string;
   onClick?: () => void;
   priority?: boolean;
+  fill?: boolean;
+  width?: number;
+  height?: number;
 }
-
-// Image cache to prevent re-loading
-const imageCache = new Set<string>();
 
 export default function OptimizedImage({
   src,
@@ -20,60 +20,58 @@ export default function OptimizedImage({
   className,
   imgClassName,
   onClick,
-  priority = false
+  priority = false,
+  fill = false,
+  width,
+  height
 }: OptimizedImageProps) {
-  const [ref, isInView] = useSharedIntersectionObserver<HTMLDivElement>({
-    rootMargin: priority ? '500px' : '50px',
-    threshold: 0.01
-  });
-  
-  const [isLoaded, setIsLoaded] = useState(imageCache.has(src));
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  useEffect(() => {
-    if (!isInView || isLoaded || hasError) return;
+  const handleLoad = () => {
+    setIsLoading(false);
+  };
 
-    const img = new Image();
-    let isCancelled = false;
-
-    img.onload = () => {
-      if (!isCancelled) {
-        imageCache.add(src);
-        setIsLoaded(true);
-      }
-    };
-
-    img.onerror = () => {
-      if (!isCancelled) {
-        setHasError(true);
-      }
-    };
-
-    img.src = src;
-
-    return () => {
-      isCancelled = true;
-      img.onload = null;
-      img.onerror = null;
-    };
-  }, [src, isInView, isLoaded, hasError]);
+  const handleError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
 
   return (
-    <div ref={ref} className={cn("relative overflow-hidden", className)} onClick={onClick}>
-      {/* Show placeholder until loaded */}
-      {(!isLoaded || hasError) && (
-        <div className="absolute inset-0 bg-surface-200 animate-pulse" />
+    <div className={cn("relative overflow-hidden", className)} onClick={onClick}>
+      {/* Show placeholder while loading */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-surface-200 animate-pulse z-10" />
       )}
       
-      {/* Only render img tag when loaded */}
-      {isLoaded && !hasError && (
-        <img 
-          src={src} 
+      {/* Show error state */}
+      {hasError && (
+        <div className="absolute inset-0 bg-surface-300 flex items-center justify-center z-10">
+          <span className="text-surface-500 text-sm">Failed to load</span>
+        </div>
+      )}
+      
+      {/* Next.js optimized image */}
+      {!hasError && (
+        <Image
+          src={src}
           alt={alt}
+          fill={fill}
+          width={fill ? undefined : width || 800}
+          height={fill ? undefined : height || 600}
+          sizes={fill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
+          priority={priority}
+          quality={85}
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyugDYkzBBiGzL2iq1g+2WCkUl0hhkkKSbHZQ7tBE0+vMPE0TP7kJjM3LGAJ2C4dOIp4vM5a+FUVUhUg5/CWAo1HWGqpKgHKHhbwBk1f7kUkS7D7TtHTIy4ug9R/9k="
+          onLoad={handleLoad}
+          onError={handleError}
           className={cn(
             "transition-opacity duration-300",
+            isLoading ? "opacity-0" : "opacity-100",
             imgClassName
           )}
+          style={{ objectFit: 'cover' }}
         />
       )}
     </div>

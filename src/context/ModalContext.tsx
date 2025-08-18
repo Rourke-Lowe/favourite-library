@@ -178,7 +178,6 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                   onMouseOver={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
                   onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
                   aria-label="Close modal"
-                  autoFocus
                 >
                   <CloseIcon />
                 </button>

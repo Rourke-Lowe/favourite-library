@@ -6,16 +6,12 @@ import { useStaticContent } from '@/content/staticContent';
 import SimpleImageCarousel from '@/components/ui/SimpleImageCarousel';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
+import NewsletterWidget from '@/components/ui/NewsletterWidget';
 
 const About = () => {
   const { locale } = useLanguage();
   const staticContent = useStaticContent();
   const content = staticContent.sections.about;
-  const handleNewsletterSignup = () => {
-    // Using the actual newsletter URL
-    const newsletterUrl = process.env.NEXT_PUBLIC_NEWSLETTER_URL || 'https://mookee.link/favourite-library';
-    window.open(newsletterUrl, '_blank');
-  };
 
   return (
     <section id="about" className="py-16 md:py-20 relative">
@@ -34,24 +30,20 @@ const About = () => {
             {content.description}
           </p>
           
-          {/* Newsletter CTA - Naturally integrated */}
-          <div className="max-w-md mx-auto p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-surface-200">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <Mail size={20} className="text-primary" />
-              <h3 className="font-medium">{content.newsletter.title}</h3>
+          {/* Newsletter CTA - With embedded widget */}
+          <div className="max-w-md mx-auto">
+            <div className="text-center mb-4">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Mail size={20} className="text-primary" />
+                <h3 className="font-medium">{content.newsletter.title}</h3>
+              </div>
+              <p className="text-sm text-surface-600">
+                {content.newsletter.description}
+              </p>
             </div>
-            <p className="text-sm text-surface-600 mb-4">
-              {content.newsletter.description}
-            </p>
-            <Button
-              variant="primary"
-              size="sm"
-              className="w-full"
-              onClick={handleNewsletterSignup}
-              aria-label={`${content.newsletter.button} - opens in new tab`}
-            >
-              {content.newsletter.button}
-            </Button>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-surface-200 p-4">
+              <NewsletterWidget />
+            </div>
           </div>
         </div>
         

@@ -1,10 +1,10 @@
 // src/components/sections/Releases.tsx
 'use client';
 import { useState, useMemo, useEffect } from 'react';
-import { useLocalizedData } from '@/hooks/useLocalizedData';
 import { useLanguage } from '@/context/LanguageContext';
 import { useStaticContent } from '@/content/staticContent';
 import type { Release } from '@/types/releases';
+import type { LocalizedSiteData } from '@/lib/dataLoader';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, ChevronDown } from 'lucide-react';
@@ -68,15 +68,20 @@ const getArtworkPath = (release: ReleaseDataFormat) => {
   return '/images/releases/placeholder.jpg';
 };
 
-const Releases = () => {
+interface ReleasesProps {
+  siteData: LocalizedSiteData;
+}
+
+const Releases = ({ siteData }: ReleasesProps) => {
   // ==================================
   // 1. ALL HOOKS FIRST (NO EXCEPTIONS!)
   // ==================================
   
   // Language and content hooks
-  const { t, formatDate } = useLanguage();
+  const { t, formatDate, locale } = useLanguage();
   const staticContent = useStaticContent();
-  const { data: releases, loading, error } = useLocalizedData<Release[]>('releases');
+  const currentLocale = (locale === 'fr') ? 'fr' : 'en';
+  const releases = siteData[currentLocale]?.releases || [];
   
   // Modal hook
   const { openModal } = useModal();
@@ -104,7 +109,7 @@ const Releases = () => {
     
     const artists = new Set<string>();
     releases.forEach(release => {
-      release.artists.forEach(artist => artists.add(artist));
+      release.artists.forEach((artist: string) => artists.add(artist));
     });
     return [t('releases.allArtists'), ...Array.from(artists)];
   }, [releases, t]);
@@ -168,27 +173,14 @@ const Releases = () => {
   };
 
   // ==================================
-  // 4. LOADING/ERROR STATES (AFTER ALL HOOKS!)
+  // 4. DATA VALIDATION
   // ==================================
   
-  if (loading) {
+  if (!releases || releases.length === 0) {
     return (
       <section className="py-24">
         <div className="container mx-auto px-6">
-          <p className="text-center">{t('common.loading')}</p>
-        </div>
-      </section>
-    );
-  }
-  
-  if (error || !releases) {
-    return (
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <p className="text-center text-red-600">{t('common.error')}</p>
-          <p className="text-center text-sm text-surface-500 mt-2">
-            Error details: {error || 'No data available'}
-          </p>
+          <p className="text-center">No releases found</p>
         </div>
       </section>
     );
@@ -373,7 +365,7 @@ const Releases = () => {
                   <div className="mb-6">
                     <h4 className="text-sm font-medium text-surface-600 mb-2">{t('releases.tracklist')}</h4>
                     <div className="space-y-1">
-                      {featuredRelease.tracks.map((trackTitle, index) => (
+                      {featuredRelease.tracks.map((trackTitle: string, index: number) => (
                         <div key={index} className="flex items-center gap-3 py-1">
                           <span className="font-mono text-xs text-surface-400 w-5 text-right">{index + 1}</span>
                           <span>{trackTitle}</span>
@@ -431,7 +423,7 @@ const Releases = () => {
             {/* Filtering options */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 my-8">
               {/* Release type filter buttons */}
-              <div className="flex rounded-lg border border-surface-200 p-1 bg-white/60 backdrop-blur-sm">
+              <div className="flex rounded-lg border border-surface-200 p-1 bg-white/10 backdrop-blur-sm">
                 <button 
                   className={cn(
                     "px-4 py-2 text-sm rounded-md transition-colors",
@@ -464,7 +456,7 @@ const Releases = () => {
                 <select
                   value={artistFilter}
                   onChange={(e) => setArtistFilter(e.target.value)}
-                  className="appearance-none px-4 py-2 pr-10 rounded-md border border-surface-200 bg-white/60 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="appearance-none px-4 py-2 pr-10 rounded-md border border-surface-200 bg-white/10 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
                   <option value="all">{t('releases.allArtists')}</option>
                   {/* Get unique artists from releases */}
@@ -507,12 +499,12 @@ const Releases = () => {
 
             {/* No results message */}
             {filteredReleases.length === 0 && (
-              <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-lg border border-surface-200">
+              <div className="text-center py-16 bg-white/10 backdrop-blur-sm rounded-lg border border-surface-200">
                 <p className="text-surface-500 mb-4">{t('releases.noResults')}</p>
                 <div className="flex gap-4 justify-center">
                   <Button 
                     variant="outline"
-                    className="bg-white/50 hover:bg-white/70"
+                    className="bg-white/10 hover:bg-white/20"
                     onClick={() => {
                       setArtistFilter(t('releases.allArtists'));
                       setTypeFilter(t('releases.allTypes'));

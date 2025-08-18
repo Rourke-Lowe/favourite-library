@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 import './globals.css';
-import ParallaxBackground from '@/components/ParallaxBackground';
+import StaticBackground from '@/components/StaticBackground';
 import { ModalProvider } from '@/context/ModalContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="antialiased">
         <div className="main-content min-h-screen">
-          <ParallaxBackground />
+          <StaticBackground />
             <LanguageProvider>
               <ModalProvider>
                 {children}

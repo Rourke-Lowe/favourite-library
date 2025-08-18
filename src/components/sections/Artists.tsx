@@ -1,19 +1,25 @@
 // src/components/sections/Artists.tsx
 'use client';
-import { useLocalizedData } from '@/hooks/useLocalizedData';
 import { useLanguage } from '@/context/LanguageContext';
 import { useStaticContent } from '@/content/staticContent';
 import type { Artist } from '@/types/artist';
+import type { LocalizedSiteData } from '@/lib/dataLoader';
 import SectionHeader from '@/components/ui/SectionHeader';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ExternalLink } from 'lucide-react';
 import { useModal } from '@/context/ModalContext';
 
-const Artists = () => {
-  const { t } = useLanguage();
+interface ArtistsProps {
+  siteData: LocalizedSiteData;
+}
+
+const Artists = ({ siteData }: ArtistsProps) => {
+  const { t, locale } = useLanguage();
   const staticContent = useStaticContent();
-  const { data: artists, loading, error } = useLocalizedData<Artist[]>('artists');
   const { openModal } = useModal();
+  
+  const currentLocale = (locale === 'fr') ? 'fr' : 'en';
+  const artists = siteData[currentLocale]?.artists || [];
   
   const getSocialLabel = (linkType: string) => {
     switch(linkType) {
@@ -37,7 +43,7 @@ const Artists = () => {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="w-full sm:w-1/3">
-            <div className="aspect-square bg-surface-200 rounded-lg overflow-hidden">
+            <div className="aspect-square bg-surface-200 rounded-lg overflow-hidden relative">
               <img 
                 src={artist.image}
                 alt={artist.name}
@@ -102,7 +108,7 @@ const Artists = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {artist.releases.map((release: any) => (
                 <div key={release.id}>
-                  <div className="aspect-square rounded-md overflow-hidden">
+                  <div className="aspect-square rounded-md overflow-hidden relative">
                     <img 
                       src={release.coverArt}
                       alt={release.title}
@@ -120,21 +126,11 @@ const Artists = () => {
     ));
   };
   
-  if (loading) {
+  if (!artists || artists.length === 0) {
     return (
       <section className="py-24">
         <div className="container mx-auto px-6">
-          <p>Loading artists...</p>
-        </div>
-      </section>
-    );
-  }
-  
-  if (error || !artists) {
-    return (
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <p>Error loading artists</p>
+          <p>No artists found</p>
         </div>
       </section>
     );
@@ -161,10 +157,10 @@ const Artists = () => {
               >
                 {/* Fixed: Using aspect-[3/4] for consistent portrait dimensions */}
                 <div className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-white/10 backdrop-blur-[2px] shadow-lg relative">
-                  <OptimizedImage 
+                  <img 
                     src={artist.image}
                     alt={artist.name}
-                    imgClassName={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isPastArtist ? 'grayscale' : ''}`}
+                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isPastArtist ? 'grayscale' : ''}`}
                   />
                   
                   {isPastArtist && (

@@ -6,9 +6,14 @@
     "auditLog": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/.4ca9c6e8ba16c8007846dd985dcb44fa3df1b38b-audit.json",
     "files": [
         {
-            "date": 1750772615797,
-            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-06-24.log",
-            "hash": "11d55c4fae24dccd004895cf4e01f2004b3723d943bde7888b04f6ee1e8bb183"
+            "date": 1755454541584,
+            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-08-17.log",
+            "hash": "61384eb2d413a6bc05d39073212313a6f4fbfc244a7c397b1a2fd6af05659ce3"
+        },
+        {
+            "date": 1755536370286,
+            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-08-18.log",
+            "hash": "cdee0d65b69b2ded098d7ac5252bfa48c1efb38ea6119d9a4c73a536fd49c4a1"
         }
     ],
     "hashType": "sha256"

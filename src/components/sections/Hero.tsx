@@ -3,31 +3,39 @@
 import { useRef, useEffect, useState } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { featuredContent } from '@/data/featured';
-import { releases } from '@/data/releases';
-import { artists } from '@/data/artists';
-import { shows } from '@/data/shows';
 import { Button } from '../ui/button';
+import type { LocalizedSiteData } from '@/lib/dataLoader';
+import { useLanguage } from '@/context/LanguageContext';
 
-const Hero = () => {
+interface HeroProps {
+  siteData: LocalizedSiteData;
+}
+
+const Hero = ({ siteData }: HeroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [content, setContent] = useState<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { locale } = useLanguage();
 
   useEffect(() => {
+    // Get data for current locale
+    const currentData = siteData[locale];
+    if (!currentData) return;
+
     // Load featured content based on type
     switch (featuredContent.type) {
       case 'release':
-        setContent(releases.find(r => r.id === featuredContent.id));
+        setContent(currentData.releases.find(r => r.id === featuredContent.id));
         break;
       case 'artist':
-        setContent(artists.find(a => a.id === featuredContent.id));
+        setContent(currentData.artists.find(a => a.id === featuredContent.id));
         break;
       case 'show':
-        setContent(shows.find(s => s.id === featuredContent.id));
+        setContent(currentData.shows.find(s => s.id === featuredContent.id));
         break;
     }
     setIsLoaded(true);
-  }, []);
+  }, [locale, siteData]);
 
   useEffect(() => {
     if (videoRef.current) {

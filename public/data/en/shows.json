@@ -1,6 +1,25 @@
 {
-  "generated": "2025-06-21T11:01:39.728431",
+  "generated": "2025-08-18T14:27:32.910313",
   "shows": [
+    {
+      "id": "handmade-02",
+      "title": "Handmade 02",
+      "date": "September 13, 2025",
+      "time": "7:30 PM",
+      "venue": "Cafe Camas",
+      "address": "",
+      "city": "Montreal",
+      "country": "",
+      "description": "We're thrilled to present **handmade 02**, our second installment in the handmade series. This unique event brings together music, vintage fashion, and DIY creativity in an intimate setting at Cafe Camas x Ninety - a special collaboration between the coffee shop social club that hosted our first event and a carefully curated vintage boutique. We are once again so lucky to be joined by three amazing artist projects: 1. Olivia Ridgely 2. Avery Jane 3. Aminala",
+      "image": "/images/shows/Coming Soon Poster Main.png",
+      "series": "Handmade",
+      "lineup": [
+        "Olivia Ridgley",
+        "Avery Jane",
+        "Aminala"
+      ],
+      "ticketLink": "https://www.tickettailor.com/events/favouritelibrary1/1825685"
+    },
     {
       "id": "common-ground-01",
       "title": "Common Ground 01",
@@ -10,11 +29,13 @@
       "address": "",
       "city": "Montreal",
       "country": "",
-      "description": "Favourite Library *Common Ground 01! We're very excited to introduce you to the Common Ground series. A new series that will be taking place outdoors, and is all about connecting with ourselves and others. Before and after the event a trained meditation & breath-work facilitator will lead a 5 minute optional grounding meditation. We'll be all loose and comfy, and then we'll be able to enjoy three artistic projects share their work in a very comfortable secluded back patio.",
-      "image": "/images/shows/Coming Soon Poster Main.png",
+      "description": "We were thrilled to introduce the Common Ground series. This new series took place outdoors and was all about connecting with ourselves and others. Before and after the event, trained meditation & breath-work facilitator Selma Kihal led a 5-10 minute optional grounding meditation. Everyone was loose and comfy, and then enjoyed three artistic projects sharing their work on a very comfortable secluded back patio. The artists who performed for Common Ground 01 were: 1. Oscar Louis with Chris Vincent 2. Charlie Houston 3. Anna Justen Guests brought picnic blankets and many came with journals to write or draw in, or objects they wanted to recharge with the joyful and peaceful energies evoked by the sounds. Doors opened at 6pm with the show starting at 7pm.",
+      "image": "/images/shows/Common Ground 01 Poster Main.jpg",
       "series": "Common Ground",
       "lineup": [
-        "TBD"
+        "Oscar Louis",
+        "Charlie Houston",
+        "Anna Justen"
       ],
       "ticketLink": "https://buytickets.at/favouritelibrary1/1749274/share/7d9612a845e70139d5deb421088ba90b"
     },
