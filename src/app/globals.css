@@ -60,9 +60,6 @@ body {
   -webkit-font-smoothing: antialiased;
   /* Better mobile scrolling */
   -webkit-overflow-scrolling: touch;
-  /* Optimize for GPU compositing */
-  transform: translateZ(0);
-  backface-visibility: hidden;
   -moz-osx-font-smoothing: grayscale;
 }
 
