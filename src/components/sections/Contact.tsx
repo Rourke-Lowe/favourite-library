@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Mail, Music, Send, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useStaticContent } from '@/content/staticContent';
-import NewsletterWidget from '@/components/ui/NewsletterWidget';
 
 const Contact = () => {
   const { locale } = useLanguage();
@@ -39,9 +38,9 @@ const Contact = () => {
             <p className="text-sm text-surface-600 mb-4">
               {content.newsletter.description}
             </p>
-            <div className="mt-4">
-              <NewsletterWidget />
-            </div>
+            <p className="text-xs text-surface-500 mt-4">
+              Subscribe to our newsletter in the About section above
+            </p>
           </div>
 
           {/* Artist Submission */}

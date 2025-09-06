@@ -6,7 +6,7 @@ import { useStaticContent } from '@/content/staticContent';
 import SimpleImageCarousel from '@/components/ui/SimpleImageCarousel';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
-import NewsletterWidget from '@/components/ui/NewsletterWidget';
+import MookeeWidget from '@/components/ui/MookeeWidget';
 
 const About = () => {
   const { locale } = useLanguage();
@@ -42,7 +42,7 @@ const About = () => {
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-surface-200 p-4">
-              <NewsletterWidget />
+              <MookeeWidget />
             </div>
           </div>
         </div>
