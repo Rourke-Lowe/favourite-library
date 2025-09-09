@@ -1,5 +1,5 @@
 {
-  "generated": "2025-09-09T12:21:28.380260",
+  "generated": "2025-09-09T13:09:44.981061",
   "artists": [
     {
       "id": "anna-justen",
@@ -87,6 +87,12 @@
         "youtube": "https://www.youtube.com/channel/UC1d78xAWYzBgK2Ro1HvL6qw"
       },
       "releases": [
+        {
+          "id": "then-there's-you",
+          "title": "Then There's You",
+          "coverArt": "/images/releases/Then There's You Edwin Raphael Artwork.jpg",
+          "releaseDate": "2025-09-09"
+        },
         {
           "id": "wytoml-deluxe",
           "title": "WYTOML Deluxe",

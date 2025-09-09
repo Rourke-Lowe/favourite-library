@@ -1,6 +1,28 @@
 {
-  "generated": "2025-09-09T12:21:28.427709",
+  "generated": "2025-09-09T13:09:45.038397",
   "releases": [
+    {
+      "id": "then-there's-you",
+      "title": "Then There's You",
+      "artists": [
+        "Edwin Raphael"
+      ],
+      "releaseDate": "2025-09-09",
+      "releaseType": "Single",
+      "genres": [
+        "Indie",
+        "Folk"
+      ],
+      "tracks": [
+        "Then There's You"
+      ],
+      "artworkPath": "Then There's You Edwin Raphael Artwork.jpg",
+      "spotifyUrl": "https://open.spotify.com/track/3cQEcyREMrpr5QU0NERJP0?si=77e84323067b4a2a",
+      "appleMusicUrl": "https://music.apple.com/us/song/then-theres-you/1831531712",
+      "description": "### Full Pitch (200 words)\n\n{{More detailed marketing pitch for press releases, etc.}}",
+      "audioClipTime": "",
+      "releaseStage": "released"
+    },
     {
       "id": "michou's-dream",
       "title": "MiCHOU's DREAM",
