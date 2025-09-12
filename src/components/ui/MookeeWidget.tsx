@@ -13,7 +13,7 @@ const MookeeWidget = () => {
       
       // First, add the iframe
       const iframe = document.createElement('iframe');
-      iframe.id = 'mookeeSubscribeWidgetIframe1756389947482';
+      iframe.id = 'mookeeSubscribeWidgetIframe1757710143919';
       iframe.style.display = 'none';
       iframe.style.borderRadius = '4px';
       iframe.setAttribute('frameborder', '0');
@@ -23,7 +23,7 @@ const MookeeWidget = () => {
       
       // Then add the script
       const script = document.createElement('script');
-      script.src = 'https://api.app.mookee.io/mookee-scripts-origin/mookeeIframe.js?id=mookeeSubscribeWidgetIframe1756389947482&t=https%3A%2F%2Fapp.mookee.io%2Ft%2Ffavourite-library%2FsubscribeWidget%2Fmain%3Ftheme%3Dlight';
+      script.src = 'https://api.app.mookee.io/mookee-scripts-origin/mookeeIframe.js?id=mookeeSubscribeWidgetIframe1757710143919&t=https%3A%2F%2Fapp.mookee.io%2Ft%2Ffavourite-library%2FsubscribeWidget%2Fmain%3Ftheme%3Dlight';
       script.onload = () => {
         console.log('Mookee script loaded successfully');
         setIsLoaded(true);
