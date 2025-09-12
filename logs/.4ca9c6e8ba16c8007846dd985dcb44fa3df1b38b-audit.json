@@ -6,24 +6,9 @@
     "auditLog": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/.4ca9c6e8ba16c8007846dd985dcb44fa3df1b38b-audit.json",
     "files": [
         {
-            "date": 1755454541584,
-            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-08-17.log",
-            "hash": "61384eb2d413a6bc05d39073212313a6f4fbfc244a7c397b1a2fd6af05659ce3"
-        },
-        {
-            "date": 1755536370286,
-            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-08-18.log",
-            "hash": "cdee0d65b69b2ded098d7ac5252bfa48c1efb38ea6119d9a4c73a536fd49c4a1"
-        },
-        {
-            "date": 1756341226812,
-            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-08-27.log",
-            "hash": "693c2a38bef0bc7ecd0a82a44613c0a7433ee91dda84724d4791db4d96818e5f"
-        },
-        {
-            "date": 1756390926269,
-            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-08-28.log",
-            "hash": "49d84141d946fa26f5d722ba5f51c091610c1fadef7cc02c49ec46634404fe56"
+            "date": 1757709680748,
+            "name": "/Users/rourkelowe/Coding/FavouriteLibrary/favourite-library/logs/mcp-puppeteer-2025-09-12.log",
+            "hash": "335993b2f17d5e157fa324b441a5a93bfafe41b7cac82c50cf3e5db4ab50f2e5"
         }
     ],
     "hashType": "sha256"

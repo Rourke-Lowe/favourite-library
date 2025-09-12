@@ -148,7 +148,7 @@ const Shows = ({ siteData }: ShowsProps) => {
         <div className="text-center mb-8">
           <p className="text-surface-600">
             {staticContent.sections.shows.ctaText}{' '}
-            <a href="/contact" className="text-primary underline">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScDNfJ7BvwIFQxpY9QW-HnPS9VVil6m9TjRVM11khI4ocELUA/viewform?usp=send_form" className="text-primary underline" target="_blank" rel="noopener noreferrer">
               {staticContent.sections.shows.ctaLink}
             </a>
           </p>
